@@ -1,0 +1,9 @@
+selenium
+flask
+selenium-wire
+packaging
+setuptools
+blinker
+certifi
+pyOpenSSL
+cryptography

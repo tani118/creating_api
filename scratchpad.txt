@@ -17,4 +17,8 @@ what i can do from askdiksha
     - class
 
 
-GET    https://api.disha.corover.ai/dishaAPI/bot/searchStation/Delhi%20S%20Rohilla
+GET    https://api.disha.corover.ai/dishaAPI/bot/searchStation/Delhi%20S%20R
+
+random version 4 uuid just send to server
+
+https://askdisha.irctc.co.in/?FROM=DLI&TO=CDG&DATE=20251114&QUOTA=GN
