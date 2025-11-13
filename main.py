@@ -1,70 +1,436 @@
-# from selenium import webdriver as selenium_webdriver
 from seleniumwire import webdriver as seleniumwire_webdriver 
-# from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
-from flask import Flask
-from datetime import date, timedelta
+from flask import Flask, request, jsonify
+from datetime import date, timedelta, datetime
 import time
 import json
+import requests as re
 
-# options = Options()
-# options.add_argument('--disable-blink-features=AutomationControlled')
-# options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36')
-    
-# driver = selenium_webdriver.Chrome(options=options)
+app = Flask(__name__)
 
-stationNameCodeMap = {
-    
+driver = None
+cached_train_data = None
+
+userTokens = {
+    'userName': {
+        'userToken': None,
+        'dSession': None,
+        'sessionId': None,
+        'capturedPayload': None,
+        'capturedHeaders': None
+    }
 }
 
-FROM = ""
-TO = ""
-DATE = ""
-QUOTA = ""
+def init_driver():
+    global driver
+    if driver is None:
+        options = seleniumwire_webdriver.ChromeOptions()
+        options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
+        driver = seleniumwire_webdriver.Chrome(options=options)
+    return driver
 
-url = f"https://askdisha.irctc.co.in/?FROM={FROM}&TO={TO}&DATE={DATE}&QUOTA={QUOTA}"
+@app.route("/closeBrowser", methods=["GET"])
+def closeBrowser():
+    global driver
+    if driver:
+        driver.quit()
+        driver = None
+        return jsonify({"message": "Browser closed successfully"}), 200
+    return jsonify({"message": "Browser was not running"}), 200
 
-app = Flask()
+@app.route("/getTrainDetailsWithRefresh", methods=["POST"])
+def getTrainDetailsWithRefresh():
+    global driver, cached_train_data
+    
+    data = request.get_json()
+    SRC = data.get('SRC')
+    DST = data.get('DST')
+    JDATE = data.get('JDATE')
+    JQUOTA = data.get('JQUOTA')
+    
+    driver = init_driver()
+    driver.get(f"https://askdisha.irctc.co.in/?FROM={SRC}&TO={DST}&DATE={JDATE}&QUOTA={JQUOTA}")
+    time.sleep(15)
 
-@app.route("/getFreshTokens", methods=["GET"])
-def getFreshTokens():
-    options = seleniumwire_webdriver.ChromeOptions()
-    options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
-    driver = seleniumwire_webdriver.Chrome(options=options)
-    tomorrow = (date.today() + timedelta(days=1)).strftime("%Y%m%d")
-    driver.get(f"https://askdisha.irctc.co.in/?FROM=DLI&TO=MMCT&DATE={tomorrow}&QUOTA=GN")
-    time.sleep(5)
+    for req in driver.requests:
+        if 'https://api.disha.corover.ai/dishaAPI/bot/editTrains/en' in req.url:
+            if req.body:
+                body = req.body.decode('utf-8')
+                payload = json.loads(body)
+                
+                userTokens['userName']['userToken'] = payload.get("userToken")
+                userTokens['userName']['dSession'] = payload.get("dSession")
+                userTokens['userName']['sessionId'] = payload.get("sessionId")
+                userTokens['userName']['capturedPayload'] = payload
+                
+                headers_dict = dict(req.headers)
+                headers_dict.pop('content-length', None)
+                headers_dict.pop('accept-encoding', None)
+                userTokens['userName']['capturedHeaders'] = headers_dict
+                break
+    
+    for req in driver.requests:
+        if 'https://api.disha.corover.ai/dishaAPI/bot/editTrains/en' in req.url:
+            if req.response:
+                response_body = req.response.body.decode('utf-8')
+                response_json = json.loads(response_body)
+                cached_train_data = response_json
+                return jsonify(response_json)
+    
+    return jsonify({"status": 500, "message": "No response captured"}), 500
 
-    from_tab = driver.find_element(By.CSS_SELECTOR, 'div[aria-label="From"]')
-    from_tab.click()
-    time.sleep(2)
-    from_input = driver.find_element(By.ID, 'station-textbox')
-    from_input.send_keys("NDLS")
-    from_input_option = driver.find_element(By.XPATH, '//p[text()="NLDS"]')
-    from_input_option.click()
+@app.route("/trains/available", methods=["GET"])
+def get_available_trains():
+    if not cached_train_data:
+        return jsonify({"error": "No train data available. Call /getTrainDetailsWithRefresh first"}), 400
+    
+    trains = cached_train_data.get('trainBtwnStnsList', [])
+    available_trains = []
+    
+    for train in trains:
+        has_availability = any(
+            avl.get('details', {}).get('avlDayList', {}).get('availablityStatus', '').startswith('AVAILABLE')
+            for avl in train.get('availability', [])
+        )
+        
+        if has_availability:
+            available_trains.append({
+                'trainNumber': train.get('trainNumber'),
+                'trainName': train.get('trainName'),
+                'departureTime': train.get('departureTime'),
+                'arrivalTime': train.get('arrivalTime'),
+                'duration': train.get('duration'),
+                'fromStation': train.get('fromStnCode'),
+                'toStation': train.get('toStnCode'),
+                'trainType': train.get('trainType', []),
+                'availableClasses': [
+                    {
+                        'class': avl.get('className'),
+                        'status': avl.get('details', {}).get('avlDayList', {}).get('availablityStatus'),
+                        'fare': avl.get('details', {}).get('avlDayList', {}).get('totalFare')
+                    }
+                    for avl in train.get('availability', [])
+                    if avl.get('details', {}).get('avlDayList', {}).get('availablityStatus', '').startswith('AVAILABLE')
+                ]
+            })
+    
+    return jsonify({
+        'count': len(available_trains),
+        'trains': available_trains
+    })
 
-    to_tab = driver.find_element(By.CSS_SELECTOR, 'div[aria-label="To"]')
-    to_tab.click()
-    time.sleep(2)
-    to_input = driver.find_element(By.ID, 'station-textbox')
-    to_input.send_keys("CDG")
-    to_input_option = driver.find_element(By.XPATH, '//p[text()="CDG"]')
-    to_input_option.click()
+@app.route("/trains/filter", methods=["POST"])
+def filter_trains():
+    if not cached_train_data:
+        return jsonify({"error": "No train data available. Call /getTrainDetailsWithRefresh first"}), 400
+    
+    filters = request.get_json()
+    trains = cached_train_data.get('trainBtwnStnsList', [])
+    filtered_trains = []
+    
+    for train in trains:
+        if filters.get('trainType') and not any(t in train.get('trainType', []) for t in filters['trainType']):
+            continue
+        
+        if filters.get('departureAfter'):
+            dep_time = datetime.strptime(train.get('departureTime'), '%H:%M').time()
+            filter_time = datetime.strptime(filters['departureAfter'], '%H:%M').time()
+            if dep_time < filter_time:
+                continue
+        
+        if filters.get('departureBefore'):
+            dep_time = datetime.strptime(train.get('departureTime'), '%H:%M').time()
+            filter_time = datetime.strptime(filters['departureBefore'], '%H:%M').time()
+            if dep_time > filter_time:
+                continue
+        
+        available_classes = []
+        for avl in train.get('availability', []):
+            class_name = avl.get('className')
+            avl_details = avl.get('details', {}).get('avlDayList', {})
+            status = avl_details.get('availablityStatus', '')
+            
+            if filters.get('classes') and class_name not in filters['classes']:
+                continue
+            
+            if filters.get('onlyAvailable') and not status.startswith('AVAILABLE'):
+                continue
+            
+            available_classes.append({
+                'class': class_name,
+                'status': status,
+                'fare': avl_details.get('totalFare')
+            })
+        
+        if available_classes or not filters.get('onlyAvailable'):
+            filtered_trains.append({
+                'trainNumber': train.get('trainNumber'),
+                'trainName': train.get('trainName'),
+                'departureTime': train.get('departureTime'),
+                'arrivalTime': train.get('arrivalTime'),
+                'duration': train.get('duration'),
+                'distance': train.get('distance'),
+                'fromStation': train.get('fromStnCode'),
+                'toStation': train.get('toStnCode'),
+                'trainType': train.get('trainType', []),
+                'runningDays': {
+                    'monday': train.get('runningMon') == 'Y',
+                    'tuesday': train.get('runningTue') == 'Y',
+                    'wednesday': train.get('runningWed') == 'Y',
+                    'thursday': train.get('runningThu') == 'Y',
+                    'friday': train.get('runningFri') == 'Y',
+                    'saturday': train.get('runningSat') == 'Y',
+                    'sunday': train.get('runningSun') == 'Y'
+                },
+                'availableClasses': available_classes if available_classes else [
+                    {
+                        'class': avl.get('className'),
+                        'status': avl.get('details', {}).get('avlDayList', {}).get('availablityStatus'),
+                        'fare': avl.get('details', {}).get('avlDayList', {}).get('totalFare')
+                    }
+                    for avl in train.get('availability', [])
+                ]
+            })
+    
+    return jsonify({
+        'count': len(filtered_trains),
+        'filters_applied': filters,
+        'trains': filtered_trains
+    })
 
-    time.sleep(2)
-    search_button = driver.find_element(By.XPATH, '//button[text()="Search Trains"]');
-    search_button.click()
+@app.route("/trains/by-class/<class_code>", methods=["GET"])
+def trains_by_class(class_code):
+    if not cached_train_data:
+        return jsonify({"error": "No train data available. Call /getTrainDetailsWithRefresh first"}), 400
+    
+    trains = cached_train_data.get('trainBtwnStnsList', [])
+    result = []
+    
+    for train in trains:
+        for avl in train.get('availability', []):
+            if avl.get('className') == class_code.upper():
+                avl_details = avl.get('details', {}).get('avlDayList', {})
+                result.append({
+                    'trainNumber': train.get('trainNumber'),
+                    'trainName': train.get('trainName'),
+                    'departureTime': train.get('departureTime'),
+                    'arrivalTime': train.get('arrivalTime'),
+                    'duration': train.get('duration'),
+                    'class': class_code.upper(),
+                    'status': avl_details.get('availablityStatus'),
+                    'fare': avl_details.get('totalFare')
+                })
+    
+    return jsonify({
+        'class': class_code.upper(),
+        'count': len(result),
+        'trains': result
+    })
 
-    for request in driver.requests:
-        if 'https://api.disha.corover.ai/dishaAPI/bot/editTrains/en' in request.url:
-            body = request.body.decode('utf-8')
-            payload = json.loads(body)
+@app.route("/trains/cheapest", methods=["GET"])
+def cheapest_trains():
+    if not cached_train_data:
+        return jsonify({"error": "No train data available. Call /getTrainDetailsWithRefresh first"}), 400
+    
+    class_filter = request.args.get('class')
+    trains = cached_train_data.get('trainBtwnStnsList', [])
+    fare_list = []
+    
+    for train in trains:
+        for avl in train.get('availability', []):
+            avl_details = avl.get('details', {}).get('avlDayList', {})
+            fare = avl_details.get('totalFare')
+            status = avl_details.get('availablityStatus', '')
+            class_name = avl.get('className')
+            
+            if fare and status.startswith('AVAILABLE'):
+                if not class_filter or class_name == class_filter.upper():
+                    fare_list.append({
+                        'trainNumber': train.get('trainNumber'),
+                        'trainName': train.get('trainName'),
+                        'departureTime': train.get('departureTime'),
+                        'arrivalTime': train.get('arrivalTime'),
+                        'duration': train.get('duration'),
+                        'class': class_name,
+                        'fare': int(fare),
+                        'status': status
+                    })
+    
+    fare_list.sort(key=lambda x: x['fare'])
+    
+    return jsonify({
+        'count': len(fare_list),
+        'trains': fare_list[:10]
+    })
 
-            return {
-                'userToken': payload.get("userToken"),
-                'dSession': payload.get("dSession"),
-                'sessionId': payload.get("sessionId"),
-            }
+@app.route("/trains/fastest", methods=["GET"])
+def fastest_trains():
+    if not cached_train_data:
+        return jsonify({"error": "No train data available. Call /getTrainDetailsWithRefresh first"}), 400
+    
+    trains = cached_train_data.get('trainBtwnStnsList', [])
+    
+    def duration_to_minutes(duration_str):
+        parts = duration_str.split(':')
+        return int(parts[0]) * 60 + int(parts[1])
+    
+    train_list = []
+    for train in trains:
+        has_available = any(
+            avl.get('details', {}).get('avlDayList', {}).get('availablityStatus', '').startswith('AVAILABLE')
+            for avl in train.get('availability', [])
+        )
+        
+        if has_available:
+            train_list.append({
+                'trainNumber': train.get('trainNumber'),
+                'trainName': train.get('trainName'),
+                'departureTime': train.get('departureTime'),
+                'arrivalTime': train.get('arrivalTime'),
+                'duration': train.get('duration'),
+                'durationMinutes': duration_to_minutes(train.get('duration')),
+                'trainType': train.get('trainType', [])
+            })
+    
+    train_list.sort(key=lambda x: x['durationMinutes'])
+    
+    for train in train_list:
+        del train['durationMinutes']
+    
+    return jsonify({
+        'count': len(train_list),
+        'trains': train_list[:10]
+    })
+
+@app.route("/trains/by-type/<train_type>", methods=["GET"])
+def trains_by_type(train_type):
+    if not cached_train_data:
+        return jsonify({"error": "No train data available. Call /getTrainDetailsWithRefresh first"}), 400
+    
+    trains = cached_train_data.get('trainBtwnStnsList', [])
+    result = []
+    
+    for train in trains:
+        if train_type.upper() in train.get('trainType', []):
+            result.append({
+                'trainNumber': train.get('trainNumber'),
+                'trainName': train.get('trainName'),
+                'departureTime': train.get('departureTime'),
+                'arrivalTime': train.get('arrivalTime'),
+                'duration': train.get('duration'),
+                'trainType': train.get('trainType', []),
+                'availableClasses': train.get('avlClasses', [])
+            })
+    
+    return jsonify({
+        'type': train_type.upper(),
+        'count': len(result),
+        'trains': result
+    })
+
+@app.route("/trains/summary", methods=["GET"])
+def trains_summary():
+    if not cached_train_data:
+        return jsonify({"error": "No train data available. Call /getTrainDetailsWithRefresh first"}), 400
+    
+    trains = cached_train_data.get('trainBtwnStnsList', [])
+    
+    total_trains = len(trains)
+    available_count = 0
+    waitlist_count = 0
+    rac_count = 0
+    
+    train_types = {}
+    classes_available = set()
+    
+    for train in trains:
+        for avl in train.get('availability', []):
+            status = avl.get('details', {}).get('avlDayList', {}).get('availablityStatus', '')
+            classes_available.add(avl.get('className'))
+            
+            if status.startswith('AVAILABLE'):
+                available_count += 1
+            elif 'WL' in status:
+                waitlist_count += 1
+            elif 'RAC' in status:
+                rac_count += 1
+        
+        for t_type in train.get('trainType', []):
+            train_types[t_type] = train_types.get(t_type, 0) + 1
+    
+    return jsonify({
+        'totalTrains': total_trains,
+        'availableSeats': available_count,
+        'waitlist': waitlist_count,
+        'rac': rac_count,
+        'trainTypes': train_types,
+        'classesAvailable': list(classes_available),
+        'quotaList': cached_train_data.get('quotaList', [])
+    })
+
+@app.route("/trains/<train_number>", methods=["GET"])
+def train_details(train_number):
+    if not cached_train_data:
+        return jsonify({"error": "No train data available. Call /getTrainDetailsWithRefresh first"}), 400
+    
+    trains = cached_train_data.get('trainBtwnStnsList', [])
+    
+    for train in trains:
+        if train.get('trainNumber') == train_number:
+            return jsonify(train)
+    
+    return jsonify({"error": f"Train {train_number} not found"}), 404
+
+@app.route("/trains/<train_number>/route", methods=["GET"])
+def train_route(train_number):
+    journey_date = request.args.get('journeyDate')
+    starting_station = request.args.get('startingStationCode')
+    
+    if not journey_date or not starting_station:
+        return jsonify({
+            "error": "Missing required parameters",
+            "required": ["journeyDate", "startingStationCode"]
+        }), 400
+    
+    headers = {
+        "accept": "application/json, text/plain, */*",
+        "accept-language": "en-GB,en-IN;q=0.9,en-US;q=0.8,en;q=0.7",
+        "content-type": "application/json",
+        "origin": "https://askdisha.irctc.co.in",
+        "referer": "https://askdisha.irctc.co.in/",
+        "sec-ch-ua": '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Linux"',
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "cross-site",
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+    }
+    
+    url = f"https://api.disha.corover.ai/dishaAPI/bot/trnscheduleEnq/{train_number}"
+    params = {
+        "journeyDate": journey_date,
+        "startingStationCode": starting_station
+    }
+    
+    response = re.get(url, headers=headers, params=params)
+    
+    if response.status_code == 200:
+        return jsonify(response.json())
+    else:
+        return jsonify({
+            "error": "Failed to fetch train route",
+            "status": response.status_code
+        }), response.status_code
+    
+# @app.route("/booktrain/getdetails/<train_number>", methods=["GET"])
+# def book_train(train_number):
+#     train_div = driver.find_element(By.XPATH, f"//div[contains(@class, 'sc-gplwa-d eSDxjh') and .//p[contains(text(), '{train_number}')]]")
+
+
+    
+
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)

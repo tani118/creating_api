@@ -1,0 +1,1141 @@
+{
+  "alternateEnquiryFlag": "false",
+  "miniChatBotFaq": [
+    "On check availability, I get 'RAC' in the availability status. What does it mean?",
+    "What does 'GNWL / WL' mean on availability status?",
+    "Can I book an e-ticket if the availability status is Waitlist?"
+  ],
+  "oneStopJourny": "false",
+  "quotaList": [
+    "SS",
+    "PT",
+    "GN",
+    "HP",
+    "LD",
+    "PH",
+    "DP",
+    "TQ"
+  ],
+  "serveyFlag": "false",
+  "timeStamp": "2025-11-12T22:07:51.423",
+  "trainBtwnStnsList": [
+    {
+      "arrivalTime": "10:59",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-13T15:36:10.933",
+          "className": "EC",
+          "details": {
+            "avlDayList": {},
+            "trainName": "KLK SHATABADI",
+            "trainNo": "12011"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T21:40:47.594",
+          "className": "CC",
+          "details": {
+            "avlDayList": {},
+            "trainName": "KLK SHATABADI",
+            "trainNo": "12011"
+          }
+        }
+      ],
+      "avlClasses": [
+        "EC",
+        "CC"
+      ],
+      "departureTime": "07:40",
+      "distance": "266",
+      "duration": "03:19",
+      "flexiFlag": "false",
+      "fromStnCode": "NDLS",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "Y",
+      "runningSun": "Y",
+      "runningThu": "Y",
+      "runningTue": "Y",
+      "runningWed": "Y",
+      "toStnCode": "CDG",
+      "trainName": "KLK SHATABADI",
+      "trainNumber": "12011",
+      "trainOwner": "0",
+      "trainType": [
+        "S"
+      ],
+      "trainsiteId": "D"
+    },
+    {
+      "arrivalTime": "03:30",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-10-22T15:50:10.366",
+          "className": "EC",
+          "details": {}
+        },
+        {
+          "cacheTime": "2025-11-12T17:52:23.421",
+          "className": "SL",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "REGRET",
+              "totalFare": "255"
+            },
+            "trainName": "MDU CDG SF EXP",
+            "trainNo": "20493"
+          }
+        },
+        {
+          "cacheTime": "2025-11-06T16:32:43.341",
+          "className": "3A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "AVAILABLE-0004",
+              "totalFare": "655"
+            },
+            "trainName": "MDU CDG SF EXP",
+            "trainNo": "20493"
+          }
+        },
+        {
+          "cacheTime": "2025-11-09T21:09:02.839",
+          "className": "3E",
+          "details": {
+            "avlDayList": {},
+            "trainName": "MDU CDG SF EXP",
+            "trainNo": "20493"
+          }
+        },
+        {
+          "cacheTime": "2025-11-01T23:43:15.418",
+          "className": "2A",
+          "details": {}
+        }
+      ],
+      "avlClasses": [
+        "2A",
+        "3A",
+        "3E",
+        "SL"
+      ],
+      "departureTime": "21:50",
+      "distance": "333",
+      "duration": "05:40",
+      "flexiFlag": "false",
+      "fromStnCode": "NZM",
+      "runningFri": "Y",
+      "runningMon": "N",
+      "runningSat": "N",
+      "runningSun": "N",
+      "runningThu": "N",
+      "runningTue": "Y",
+      "runningWed": "N",
+      "toStnCode": "CDG",
+      "trainName": "MDU CDG SF EXP",
+      "trainNumber": "20493",
+      "trainOwner": "0",
+      "trainType": [
+        "O"
+      ],
+      "trainsiteId": "M"
+    },
+    {
+      "arrivalTime": "14:15",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-10T20:47:11.141",
+          "className": "SL",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL11/WL11",
+              "totalFare": "225"
+            },
+            "trainName": "BDTS CDG SF EXP",
+            "trainNo": "22451"
+          }
+        },
+        {
+          "cacheTime": "2025-11-10T20:47:12.896",
+          "className": "3E",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "AVAILABLE-0016",
+              "totalFare": "560"
+            },
+            "trainName": "BDTS CDG SF EXP",
+            "trainNo": "22451"
+          }
+        },
+        {
+          "cacheTime": "2025-11-12T04:49:55.209",
+          "className": "3A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL3/WL3",
+              "totalFare": "560"
+            },
+            "trainName": "BDTS CDG SF EXP",
+            "trainNo": "22451"
+          }
+        },
+        {
+          "cacheTime": "2025-11-10T20:47:17.876",
+          "className": "1A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL1/WL1",
+              "totalFare": "1260"
+            },
+            "trainName": "BDTS CDG SF EXP",
+            "trainNo": "22451"
+          }
+        },
+        {
+          "cacheTime": "2025-11-10T20:47:19.781",
+          "className": "2A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "AVAILABLE-0003",
+              "totalFare": "765"
+            },
+            "trainName": "BDTS CDG SF EXP",
+            "trainNo": "22451"
+          }
+        }
+      ],
+      "avlClasses": [
+        "1A",
+        "2A",
+        "3A",
+        "3E",
+        "SL"
+      ],
+      "departureTime": "10:18",
+      "distance": "272",
+      "duration": "03:57",
+      "flexiFlag": "false",
+      "fromStnCode": "DEC",
+      "runningFri": "Y",
+      "runningMon": "N",
+      "runningSat": "N",
+      "runningSun": "N",
+      "runningThu": "N",
+      "runningTue": "Y",
+      "runningWed": "N",
+      "toStnCode": "CDG",
+      "trainName": "BDTS CDG SF EXP",
+      "trainNumber": "22451",
+      "trainOwner": "0",
+      "trainType": [
+        "O"
+      ],
+      "trainsiteId": "B"
+    },
+    {
+      "arrivalTime": "15:45",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-11T13:18:40.590",
+          "className": "SL",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL15/WL11",
+              "totalFare": "220"
+            },
+            "trainName": "CDG SKRANTI EXP",
+            "trainNo": "22685"
+          }
+        },
+        {
+          "cacheTime": "2025-11-08T09:49:50.830",
+          "className": "CC",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "CLASS NOT EXIST",
+              "totalFare": "465"
+            },
+            "trainName": "CDG SKRANTI EXP",
+            "trainNo": "22685"
+          }
+        },
+        {
+          "cacheTime": "2025-11-08T09:49:52.770",
+          "className": "3A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL11/WL6",
+              "totalFare": "560"
+            },
+            "trainName": "CDG SKRANTI EXP",
+            "trainNo": "22685"
+          }
+        },
+        {
+          "cacheTime": "2025-11-09T18:00:01.933",
+          "className": "2A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "REGRET",
+              "totalFare": "765"
+            },
+            "trainName": "CDG SKRANTI EXP",
+            "trainNo": "22685"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T15:50:55.197",
+          "className": "1A",
+          "details": {
+            "avlDayList": {},
+            "trainName": "CDG SKRANTI EXP",
+            "trainNo": "22685"
+          }
+        },
+        {
+          "cacheTime": "2025-11-09T22:37:39.357",
+          "className": "SL",
+          "details": {
+            "avlDayList": {},
+            "trainName": "CDG SKRANTI EXP",
+            "trainNo": "22685"
+          }
+        },
+        {
+          "cacheTime": "2025-11-03T11:58:03.553",
+          "className": "CC",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "CLASS NOT EXIST",
+              "totalFare": "470"
+            },
+            "trainName": "CDG SKRANTI EXP",
+            "trainNo": "22685"
+          }
+        }
+      ],
+      "avlClasses": [
+        "1A",
+        "2A",
+        "3A",
+        "CC",
+        "SL"
+      ],
+      "departureTime": "12:10",
+      "distance": "263",
+      "duration": "03:35",
+      "flexiFlag": "false",
+      "fromStnCode": "NDLS",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "N",
+      "runningSun": "N",
+      "runningThu": "N",
+      "runningTue": "N",
+      "runningWed": "N",
+      "toStnCode": "CDG",
+      "trainName": "CDG SKRANTI EXP",
+      "trainNumber": "22685",
+      "trainOwner": "0",
+      "trainType": [
+        "O"
+      ],
+      "trainsiteId": "M"
+    },
+    {
+      "arrivalTime": "14:45",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-13T13:17:07.715",
+          "className": "EC",
+          "details": {
+            "avlDayList": {},
+            "trainName": "CDG VANDEBHARAT",
+            "trainNo": "20977"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T19:48:18.066",
+          "className": "CC",
+          "details": {
+            "avlDayList": {},
+            "trainName": "CDG VANDEBHARAT",
+            "trainNo": "20977"
+          }
+        },
+        {
+          "cacheTime": "2025-10-30T21:25:07.394",
+          "className": "SL",
+          "details": {}
+        }
+      ],
+      "avlClasses": [
+        "EC",
+        "CC"
+      ],
+      "departureTime": "11:35",
+      "distance": "272",
+      "duration": "03:10",
+      "flexiFlag": "false",
+      "fromStnCode": "DEC",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "Y",
+      "runningSun": "Y",
+      "runningThu": "Y",
+      "runningTue": "Y",
+      "runningWed": "N",
+      "toStnCode": "CDG",
+      "trainName": "CDG VANDEBHARAT",
+      "trainNumber": "20977",
+      "trainOwner": "0",
+      "trainType": [
+        "VB",
+        "S"
+      ],
+      "trainsiteId": "D"
+    },
+    {
+      "arrivalTime": "08:38",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-13T20:30:48.346",
+          "className": "EC",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "CHARTING DONE *",
+              "totalFare": "1580"
+            },
+            "trainName": "VANDE BHARAT EX",
+            "trainNo": "22447"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T21:42:53.275",
+          "className": "CC",
+          "details": {
+            "avlDayList": {},
+            "trainName": "VANDE BHARAT EX",
+            "trainNo": "22447"
+          }
+        }
+      ],
+      "avlClasses": [
+        "EC",
+        "CC"
+      ],
+      "departureTime": "05:50",
+      "distance": "266",
+      "duration": "02:48",
+      "flexiFlag": "false",
+      "fromStnCode": "NDLS",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "Y",
+      "runningSun": "Y",
+      "runningThu": "Y",
+      "runningTue": "N",
+      "runningWed": "Y",
+      "toStnCode": "CDG",
+      "trainName": "VANDE BHARAT EX",
+      "trainNumber": "22447",
+      "trainOwner": "0",
+      "trainType": [
+        "VB",
+        "S"
+      ],
+      "trainsiteId": "D"
+    },
+    {
+      "arrivalTime": "15:23",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-13T13:17:20.139",
+          "className": "SL",
+          "details": {
+            "avlDayList": {},
+            "trainName": "PASCHIM EXPRESS",
+            "trainNo": "12925"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T13:17:25.871",
+          "className": "3A",
+          "details": {
+            "avlDayList": {},
+            "trainName": "PASCHIM EXPRESS",
+            "trainNo": "12925"
+          }
+        },
+        {
+          "cacheTime": "2025-11-12T12:54:16.464",
+          "className": "2A",
+          "details": {
+            "avlDayList": {},
+            "trainName": "PASCHIM EXPRESS",
+            "trainNo": "12925"
+          }
+        },
+        {
+          "cacheTime": "2025-11-11T13:18:16.213",
+          "className": "1A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL1/WL1",
+              "totalFare": "1260"
+            },
+            "trainName": "PASCHIM EXPRESS",
+            "trainNo": "12925"
+          }
+        },
+        {
+          "cacheTime": "2025-11-07T21:25:06.403",
+          "className": "EC",
+          "details": {}
+        },
+        {
+          "cacheTime": "2025-11-12T22:22:44.418",
+          "className": "2A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL3/WL3",
+              "totalFare": "765"
+            },
+            "trainName": "PASCHIM EXPRESS",
+            "trainNo": "12925"
+          }
+        },
+        {
+          "cacheTime": "2025-11-05T02:41:53.627",
+          "className": "1A",
+          "details": {
+            "avlDayList": {},
+            "trainName": "PASCHIM EXPRESS",
+            "trainNo": "12925"
+          }
+        },
+        {
+          "cacheTime": "2025-11-02T09:45:21.908",
+          "className": "SL",
+          "details": {
+            "avlDayList": {},
+            "trainName": "PASCHIM EXPRESS",
+            "trainNo": "12925"
+          }
+        },
+        {
+          "cacheTime": "2025-11-04T21:18:18.611",
+          "className": "3A",
+          "details": {
+            "avlDayList": {},
+            "trainName": "PASCHIM EXPRESS",
+            "trainNo": "12925"
+          }
+        }
+      ],
+      "avlClasses": [
+        "1A",
+        "2A",
+        "3A",
+        "SL"
+      ],
+      "departureTime": "11:05",
+      "distance": "267",
+      "duration": "04:18",
+      "flexiFlag": "false",
+      "fromStnCode": "NDLS",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "Y",
+      "runningSun": "Y",
+      "runningThu": "Y",
+      "runningTue": "Y",
+      "runningWed": "Y",
+      "toStnCode": "CDG",
+      "trainName": "PASCHIM EXPRESS",
+      "trainNumber": "12925",
+      "trainOwner": "0",
+      "trainType": [
+        "O"
+      ],
+      "trainsiteId": "B"
+    },
+    {
+      "arrivalTime": "03:13",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-12T19:17:18.148",
+          "className": "SL",
+          "details": {
+            "avlDayList": {},
+            "trainName": "AGC HSX EXP",
+            "trainNo": "11905"
+          }
+        },
+        {
+          "cacheTime": "2025-11-12T22:08:33.116",
+          "className": "3A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL24/WL14",
+              "totalFare": "515"
+            },
+            "trainName": "AGC HSX EXP",
+            "trainNo": "11905"
+          }
+        },
+        {
+          "cacheTime": "2025-11-12T22:08:36.439",
+          "className": "2A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL13/WL8",
+              "totalFare": "720"
+            },
+            "trainName": "AGC HSX EXP",
+            "trainNo": "11905"
+          }
+        },
+        {
+          "cacheTime": "2025-11-10T12:29:34.367",
+          "className": "1A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL1/WL1",
+              "totalFare": "1185"
+            },
+            "trainName": "AGC HSX EXP",
+            "trainNo": "11905"
+          }
+        }
+      ],
+      "avlClasses": [
+        "1A",
+        "2A",
+        "3A",
+        "SL"
+      ],
+      "departureTime": "22:20",
+      "distance": "266",
+      "duration": "04:53",
+      "flexiFlag": "false",
+      "fromStnCode": "NDLS",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "Y",
+      "runningSun": "Y",
+      "runningThu": "Y",
+      "runningTue": "Y",
+      "runningWed": "Y",
+      "toStnCode": "CDG",
+      "trainName": "AGC HSX EXP",
+      "trainNumber": "11905",
+      "trainOwner": "0",
+      "trainType": [
+        "O"
+      ],
+      "trainsiteId": "D"
+    },
+    {
+      "arrivalTime": "18:45",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-13T21:49:14.276",
+          "className": "2S",
+          "details": {
+            "avlDayList": {},
+            "trainName": "JANSHATABDI EXP",
+            "trainNo": "12057"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T20:56:57.901",
+          "className": "CC",
+          "details": {
+            "avlDayList": {},
+            "trainName": "JANSHATABDI EXP",
+            "trainNo": "12057"
+          }
+        }
+      ],
+      "avlClasses": [
+        "CC",
+        "2S"
+      ],
+      "departureTime": "14:35",
+      "distance": "266",
+      "duration": "04:10",
+      "flexiFlag": "false",
+      "fromStnCode": "NDLS",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "Y",
+      "runningSun": "Y",
+      "runningThu": "Y",
+      "runningTue": "Y",
+      "runningWed": "Y",
+      "toStnCode": "CDG",
+      "trainName": "JANSHATABDI EXP",
+      "trainNumber": "12057",
+      "trainOwner": "0",
+      "trainType": [
+        "JS"
+      ],
+      "trainsiteId": "D"
+    },
+    {
+      "arrivalTime": "02:53",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-12T17:52:09.110",
+          "className": "SL",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "REGRET",
+              "totalFare": "190"
+            },
+            "trainName": "SBP JAT EXPRESS",
+            "trainNo": "18309"
+          }
+        },
+        {
+          "cacheTime": "2025-11-02T14:30:28.271",
+          "className": "3A",
+          "details": {
+            "avlDayList": {},
+            "trainName": "SBP JAT EXPRESS",
+            "trainNo": "18309"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T20:00:32.628",
+          "className": "2A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "REGRET",
+              "totalFare": "720"
+            },
+            "trainName": "SBP JAT EXPRESS",
+            "trainNo": "18309"
+          }
+        }
+      ],
+      "avlClasses": [
+        "2A",
+        "3A",
+        "SL"
+      ],
+      "departureTime": "21:25",
+      "distance": "265",
+      "duration": "05:28",
+      "flexiFlag": "false",
+      "fromStnCode": "DLI",
+      "runningFri": "Y",
+      "runningMon": "N",
+      "runningSat": "N",
+      "runningSun": "Y",
+      "runningThu": "N",
+      "runningTue": "Y",
+      "runningWed": "Y",
+      "toStnCode": "CDG",
+      "trainName": "SBP JAT EXPRESS",
+      "trainNumber": "18309",
+      "trainOwner": "0",
+      "trainType": [
+        "O"
+      ],
+      "trainsiteId": "C"
+    },
+    {
+      "arrivalTime": "22:35",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-13T18:14:21.523",
+          "className": "CC",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "GNWL72/WL43",
+              "totalFare": "985"
+            },
+            "trainName": "CDG SHATABDI",
+            "trainNo": "12045"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T16:47:25.985",
+          "className": "EC",
+          "details": {
+            "avlDayList": {},
+            "trainName": "CDG SHATABDI",
+            "trainNo": "12045"
+          }
+        }
+      ],
+      "avlClasses": [
+        "EC",
+        "CC"
+      ],
+      "departureTime": "19:15",
+      "distance": "266",
+      "duration": "03:20",
+      "flexiFlag": "false",
+      "fromStnCode": "NDLS",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "Y",
+      "runningSun": "Y",
+      "runningThu": "Y",
+      "runningTue": "Y",
+      "runningWed": "N",
+      "toStnCode": "CDG",
+      "trainName": "CDG SHATABDI",
+      "trainNumber": "12045",
+      "trainOwner": "0",
+      "trainType": [
+        "S"
+      ],
+      "trainsiteId": "D"
+    },
+    {
+      "arrivalTime": "01:35",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-13T21:00:58.591",
+          "className": "SL",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL80/WL61",
+              "totalFare": "185"
+            },
+            "trainName": "NETAJI EXPRESS",
+            "trainNo": "12311"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T20:04:51.680",
+          "className": "3A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL17/WL12",
+              "totalFare": "515"
+            },
+            "trainName": "NETAJI EXPRESS",
+            "trainNo": "12311"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T16:42:48.637",
+          "className": "2A",
+          "details": {
+            "avlDayList": {},
+            "trainName": "NETAJI EXPRESS",
+            "trainNo": "12311"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T16:42:50.205",
+          "className": "1A",
+          "details": {
+            "avlDayList": {},
+            "trainName": "NETAJI EXPRESS",
+            "trainNo": "12311"
+          }
+        }
+      ],
+      "avlClasses": [
+        "1A",
+        "2A",
+        "3A",
+        "SL"
+      ],
+      "departureTime": "21:10",
+      "distance": "243",
+      "duration": "04:25",
+      "flexiFlag": "false",
+      "fromStnCode": "DLI",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "Y",
+      "runningSun": "Y",
+      "runningThu": "Y",
+      "runningTue": "Y",
+      "runningWed": "Y",
+      "toStnCode": "CDG",
+      "trainName": "NETAJI EXPRESS",
+      "trainNumber": "12311",
+      "trainOwner": "0",
+      "trainType": [
+        "SP"
+      ],
+      "trainsiteId": "C"
+    },
+    {
+      "arrivalTime": "20:30",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-13T18:17:55.200",
+          "className": "CC",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "GNWL24/WL15",
+              "totalFare": "985"
+            },
+            "trainName": "KALKA SHTBDI EX",
+            "trainNo": "12005"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T16:41:20.925",
+          "className": "EC",
+          "details": {
+            "avlDayList": {},
+            "trainName": "KALKA SHTBDI EX",
+            "trainNo": "12005"
+          }
+        }
+      ],
+      "avlClasses": [
+        "EC",
+        "CC"
+      ],
+      "departureTime": "17:15",
+      "distance": "266",
+      "duration": "03:15",
+      "flexiFlag": "false",
+      "fromStnCode": "NDLS",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "Y",
+      "runningSun": "Y",
+      "runningThu": "Y",
+      "runningTue": "Y",
+      "runningWed": "Y",
+      "toStnCode": "CDG",
+      "trainName": "KALKA SHTBDI EX",
+      "trainNumber": "12005",
+      "trainOwner": "0",
+      "trainType": [
+        "S"
+      ],
+      "trainsiteId": "D"
+    },
+    {
+      "arrivalTime": "05:00",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-10T20:28:08.741",
+          "className": "SL",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL31/WL20",
+              "totalFare": "225"
+            },
+            "trainName": "INDB UHL EXP",
+            "trainNo": "19307"
+          }
+        },
+        {
+          "cacheTime": "2025-11-12T22:06:59.977",
+          "className": "3E",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL6/WL6",
+              "totalFare": "560"
+            },
+            "trainName": "INDB UHL EXP",
+            "trainNo": "19307"
+          }
+        },
+        {
+          "cacheTime": "2025-11-12T22:07:03.442",
+          "className": "3A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "REGRET",
+              "totalFare": "605"
+            },
+            "trainName": "INDB UHL EXP",
+            "trainNo": "19307"
+          }
+        },
+        {
+          "cacheTime": "2025-11-12T22:07:08.692",
+          "className": "2A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL3/WL2",
+              "totalFare": "855"
+            },
+            "trainName": "INDB UHL EXP",
+            "trainNo": "19307"
+          }
+        },
+        {
+          "cacheTime": "2025-10-29T18:47:57.119",
+          "className": "1A",
+          "details": {
+            "avlDayList": {},
+            "trainName": "INDB UHL EXP",
+            "trainNo": "19307"
+          }
+        }
+      ],
+      "avlClasses": [
+        "1A",
+        "2A",
+        "3A",
+        "3E",
+        "SL"
+      ],
+      "departureTime": "23:20",
+      "distance": "333",
+      "duration": "05:40",
+      "flexiFlag": "false",
+      "fromStnCode": "NZM",
+      "runningFri": "Y",
+      "runningMon": "N",
+      "runningSat": "N",
+      "runningSun": "N",
+      "runningThu": "Y",
+      "runningTue": "N",
+      "runningWed": "N",
+      "toStnCode": "CDG",
+      "trainName": "INDB UHL EXP",
+      "trainNumber": "19307",
+      "trainOwner": "0",
+      "trainType": [
+        "O"
+      ],
+      "trainsiteId": "B"
+    },
+    {
+      "arrivalTime": "09:15",
+      "atasOpted": "false",
+      "availability": [
+        {
+          "cacheTime": "2025-11-08T17:45:46.696",
+          "className": "1A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "AVAILABLE-0004",
+              "totalFare": "1185"
+            },
+            "trainName": "UNCHAHAR EXP",
+            "trainNo": "14217"
+          }
+        },
+        {
+          "cacheTime": "2025-11-08T17:45:41.314",
+          "className": "3A",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "AVAILABLE-0044",
+              "totalFare": "515"
+            },
+            "trainName": "UNCHAHAR EXP",
+            "trainNo": "14217"
+          }
+        },
+        {
+          "cacheTime": "2025-11-13T10:45:01.434",
+          "className": "SL",
+          "details": {
+            "avlDayList": {
+              "availablityDate": "14-11-2025",
+              "availablityStatus": "RLWL10/WL10",
+              "totalFare": "190"
+            },
+            "trainName": "UNCHAHAR EXP",
+            "trainNo": "14217"
+          }
+        },
+        {
+          "cacheTime": "2025-11-12T12:08:13.937",
+          "className": "3E",
+          "details": {}
+        },
+        {
+          "cacheTime": "2025-11-12T12:53:48.563",
+          "className": "2A",
+          "details": {
+            "avlDayList": {},
+            "trainName": "UNCHAHAR EXP",
+            "trainNo": "14217"
+          }
+        }
+      ],
+      "avlClasses": [
+        "1A",
+        "2A",
+        "3A",
+        "3E",
+        "SL"
+      ],
+      "departureTime": "04:15",
+      "distance": "265",
+      "duration": "05:00",
+      "flexiFlag": "false",
+      "fromStnCode": "DLI",
+      "runningFri": "Y",
+      "runningMon": "Y",
+      "runningSat": "Y",
+      "runningSun": "Y",
+      "runningThu": "Y",
+      "runningTue": "Y",
+      "runningWed": "Y",
+      "toStnCode": "CDG",
+      "trainName": "UNCHAHAR EXP",
+      "trainNumber": "14217",
+      "trainOwner": "0",
+      "trainType": [
+        "O"
+      ],
+      "trainsiteId": "D"
+    }
+  ],
+  "vikalpInSpecialTrainsAccomFlag": "false"
+}

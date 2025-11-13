@@ -22,3 +22,169 @@ GET    https://api.disha.corover.ai/dishaAPI/bot/searchStation/Delhi%20S%20R
 random version 4 uuid just send to server
 
 https://askdisha.irctc.co.in/?FROM=DLI&TO=CDG&DATE=20251114&QUOTA=GN
+
+channel: "https://askdisha.irctc.co.in/"
+dSession: "Dj4doC3iqXLT2q3GfM3X8qZbkpeO3DGM0Sz/Ojks0DddJ7uYF3APyNXZRPPMLCgrGEcrKm6s4udV382PPbAR9YK9sez6Sahptjx2a0qSwYfxhmB"
+destination: "CDG"
+deviceId: null
+isDirect: true
+jQuota: "GN"
+journeyDate: "20251114"
+sessionId: "44eec9d9-6c12-4fe0-b336-98da28da0832"
+source: "NDLS"
+status: 1
+userAgent: "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
+userToken: "ecc33198-8b17-4cd5-9a55-a773cabb9738"
+
+
+OG =>
+# from selenium import webdriver as selenium_webdriver
+from seleniumwire import webdriver as seleniumwire_webdriver 
+# from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from flask import Flask, request, jsonify
+from datetime import date, timedelta
+import time
+import json
+import requests as re
+
+# options = Options()
+# options.add_argument('--disable-blink-features=AutomationControlled')
+# options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36')
+    
+# driver = selenium_webdriver.Chrome(options=options)
+
+stationNameCodeMap = {
+    
+}
+
+FROM = ""
+TO = ""
+DATE = ""
+QUOTA = ""
+
+url = f"https://askdisha.irctc.co.in/?FROM={FROM}&TO={TO}&DATE={DATE}&QUOTA={QUOTA}"
+
+app = Flask(__name__)
+
+userTokens = {
+    'userName': {
+        'userToken': '7c05ee28-07ca-48e1-818b-9c299c66a270',
+        'dSession': 'XC2MqfzTIRoRDKHCqrbpNQB0hM5x37mG/5/yNpjEznE8r1+tqIFvsO8vwrhZxNrIl/Akb/wrN4mXVkWCJdAIZwdWrffr7u0BkVSSsydPMYJTDtClD17LCr6+aY6IVH/44nLVtANGKu8eWF9ru3CmxytvM9mstRcyaGvY+CfVbZ5hEjIxTv7HTpPCdH+3gM99ShL81gQjZGNj64q2kmMdN7CJC9tI88MH+7SFTtL0aeOfs8fOyxc6bGy72XerSnkygdOGlvp/z4ThGhRLUjuA1l1o61EVwKEPhtDXK22YU+zQpP2mLXdcXSb76lFSHxmzpxmBg/TfCrrR7dWlbTi3vuAw55iQMeK6ZNqLpH+clFaJpR1cS1BchM74nwEWyRLeNQIbvAgg5QYEtVI1vBAXk1rkztxg/SLsho6Ihc7F8KWNjWS1/0Ynavljy1C8z4N8bug9LP2Lt89c0+X2G1N0+TF2+TqTpGdTn7gsIZgcu0sVTY8zvETPDDOOLVNuhMXSWPSRwSTA2BXby/G3Wo/ajK9tBCVtthaf2RYOhKLCb8RBDpdoBe/kZrZHIzK7jwOzAY5904zaxRQI2nQd+MhFSShSfD1XA6AMxPn+0TUzFeGDpu7zIzmMSaDhSVKkvHP2tNErdWmyVYREd6mezWZD65rAkcpJ7MM4rT6nmkoEwjTu3DQbAztFoYR7yVDpgDy3ZLXbm1sz4cNvSXoiRABRYJ1gypJbXItVnrXePGW1WNSz7GL5Pa4gPX3/24M9A4a1Q0U+hZV2Tsy9g2mwHXhopoY5bMaK5bAJ0DGPkpYNZpAVmwXQbEhr+gOCeF6kmNYnzr+X5M+DxUE79/UTbVKp0tyNgF9eQuP9BCDpTtAUlHNsN1oe2NDdtx9Mad7ROL/3gEGGXAbtx07OFbAxH2lrs60umj6HvxXWIybOit7Lf6298mn8cvLuaQlXpCwausE/15bgvazNJ2yQ+cxR06FyYiYaLsv5t6WeKutdEmXNiJxZaalSKvbnue4zvjnq7Ms57jbT2PYIMc4xYCvIxWvmuSn7czCkR6SLxJkv8hG/81BqDC7lfxGUnVlUsNuMCylL7SSFhZqiU+JsouZiO9fDd9V5itRod1Xi2LDkMgeuDKStdKtYIkF+Cg6AdrYzhr1kQRpbQGrL1c4MwmCTjxPdx/P25MwI7bibESJZeGwquohQeCARVJcOANdl8JEWaH4EcdMZ0Mo/pJwLrg2nyBSQDfKRQP9+6FlbdvgIZ8LtuD7SLKvAqq104zB7U1/anKNQWidHOyH3VN03xCskfwosNW7XhB3Qu/zR6ffu+9dhdym/htYJZxzOvgsjpy3CT4uyp3hRnd11nfrfW3FUZM6i+Q==',
+        'sessionId': '2283ef80-06b8-4cd6-90e4-107e6b905701'
+    }
+}
+
+@app.route("/getFreshTokens", methods=["GET"])
+def getFreshTokens():
+    options = seleniumwire_webdriver.ChromeOptions()
+    options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
+    driver = seleniumwire_webdriver.Chrome(options=options)
+    tomorrow = (date.today() + timedelta(days=1)).strftime("%Y%m%d")
+    driver.get(f"https://askdisha.irctc.co.in/?FROM=&TO=&DATE={tomorrow}&QUOTA=GN")
+    time.sleep(5)
+
+    from_tab = driver.find_element(By.CSS_SELECTOR, 'div[aria-label="From"]')
+    from_tab.click()
+    time.sleep(2)
+    from_input = driver.find_element(By.ID, 'station-textbox')
+    from_input.send_keys("NDLS")
+    time.sleep(2)
+    from_input_option = driver.find_element(By.XPATH, '//p[text()="NDLS"]')
+    from_input_option.click()
+    time.sleep(2)
+
+    to_tab = driver.find_element(By.CSS_SELECTOR, 'div[aria-label="To"]')
+    to_tab.click()
+    time.sleep(2)
+    to_input = driver.find_element(By.ID, 'station-textbox')
+    to_input.send_keys("CDG")
+    time.sleep(2)
+    to_input_option = driver.find_element(By.XPATH, '//p[text()="CDG"]')
+    to_input_option.click()
+
+    time.sleep(2)
+    search_button = driver.find_element(By.XPATH, '//button[text()="Search Trains"]');
+    search_button.click()
+
+    time.sleep(5)
+
+    for request in driver.requests:
+        if 'https://api.disha.corover.ai/dishaAPI/bot/editTrains/en' in request.url:
+            body = request.body.decode('utf-8')
+            payload = json.loads(body)
+
+
+            userTokens['userName']['userToken'] = payload.get("userToken")
+            userTokens['userName']['dSession'] = payload.get("dSession")
+            userTokens['userName']['sessionId'] = payload.get("sessionId")
+            
+            found = True
+            break
+    if found:
+        return jsonify({
+            "status": 200,
+            "message": "Tokens refreshed successfully",
+            "tokens": {
+                "userToken": userTokens['userName']['userToken'],
+                "sessionId": userTokens['userName']['sessionId'],
+                "dSession": userTokens['userName']['dSession'][:50] + "...",
+                "lastUpdated": userTokens['userName']['lastUpdated']
+            }
+        }), 200
+
+
+@app.route("/getTrainDetails", methods=["POST"])
+def getTrainDetails():
+    data = request.get_json()
+    SRC = data.get('SRC')
+    DST = data.get('DST')
+    JDATE = data.get('JDATE')
+    JQUOTA = data.get('JQUOTA')
+    payload = {
+        "channel": "https://askdisha.irctc.co.in/",
+        "dSession": userTokens["userName"]["dSession"],
+        "destination": DST,
+        "deviceId": None,
+        "isDirect": True,
+        "jQuota": JQUOTA,
+        "journeyDate": JDATE,
+        "sessionId": userTokens["userName"]["sessionId"],
+        "source": SRC,
+        "status": 1,
+        "userAgent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+        "userToken": userTokens["userName"]["userToken"]
+    }
+
+
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "en-GB,en-IN;q=0.9,en-US;q=0.8,en;q=0.7",
+        "Accept-Encoding": "gzip, deflate, br, zstd",
+        
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36",
+        
+        "app-id": "29fd4f94-f793-4227-9588-056b5ffb1318",
+        "auth-key": "2b5fb5d4-0753-4302-b661-f8580e9effb0",
+        
+        "Origin": "https://askdisha.irctc.co.in",
+        "Referer": "https://askdisha.irctc.co.in/",
+        
+        "sec-ch-ua": '"Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"',
+        "sec-ch-ua-mobile": "?0",
+        "sec-ch-ua-platform": '"Linux"',
+        "sec-fetch-dest": "empty",
+        "sec-fetch-mode": "cors",
+        "sec-fetch-site": "cross-site",
+    }
+
+    res = re.post(
+        url="https://api.disha.corover.ai/dishaAPI/bot/editTrains/en",
+        headers=headers,
+        json=payload
+    )
+    return jsonify(res.json())
+
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0', port=5000)
