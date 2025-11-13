@@ -1,0 +1,20 @@
+what i can do from askdiksha
+- show route from one station to another
+- filter
+    - quota
+    - sort train names by
+        - train name
+        - arrival time
+        - departure time
+        - fastest
+    - departure train timings and arrival train timings 
+        {
+            Early Morning (00:00-06:00),
+            Morning (06:00-12:00),
+            Afternoon (12:00-18:00),
+            Night (18:00-24:00)
+        }
+    - class
+
+
+GET    https://api.disha.corover.ai/dishaAPI/bot/searchStation/Delhi%20S%20Rohilla
