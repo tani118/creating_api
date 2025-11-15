@@ -10,25 +10,36 @@ import json
 BACKEND_URL = "http://localhost:5000"
 
 @tool
-def search_trains(source: str, destination: str, date: str, quota: str = "GN") -> str:
+def search_trains(query: str) -> str:
     """
     Search for trains between two stations on a specific date.
+    Use this tool when user asks to find trains or search for trains.
+    
+    Input should be a JSON string with format:
+    {"source": "NDLS", "destination": "BCT", "date": "25-11-2025", "quota": "GN"}
     
     Args:
-        source: Source station code (e.g., 'NDLS' for New Delhi, 'ADI' for Ahmedabad)
-        destination: Destination station code (e.g., 'BCT' for Mumbai Central)
-        date: Journey date in DD-MM-YYYY format (e.g., '15-11-2025')
-        quota: Quota type - 'GN' for General, 'TQ' for Tatkal (default: 'GN')
+        query: JSON string containing source, destination, date, and optional quota
     
     Returns:
         JSON string with train details including availability
     """
     try:
+        # Parse the JSON input
+        params = json.loads(query)
+        source = params.get("source", "").upper()
+        destination = params.get("destination", "").upper()
+        date = params.get("date", "")
+        quota = params.get("quota", "GN").upper()
+        
+        if not all([source, destination, date]):
+            return json.dumps({"error": "Missing required fields: source, destination, or date"})
+        
         response = requests.post(
             f"{BACKEND_URL}/getTrainDetailsWithRefresh",
             json={
-                "SRC": source.upper(),
-                "DST": destination.upper(),
+                "SRC": source,
+                "DST": destination,
                 "JDATE": date,
                 "JQUOTA": quota
             },
@@ -44,6 +55,8 @@ def search_trains(source: str, destination: str, date: str, quota: str = "GN") -
             return summary
         else:
             return f"Error searching trains: {response.status_code}"
+    except json.JSONDecodeError as e:
+        return f"Error parsing input JSON: {str(e)}. Expected format: {{'source': 'NDLS', 'destination': 'BCT', 'date': '25-11-2025'}}"
     except Exception as e:
         return f"Error calling search API: {str(e)}"
 

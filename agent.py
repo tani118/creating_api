@@ -90,7 +90,6 @@ CONVERSATION FLOW:
 Always use the provided tools to fetch real-time data. Never make up train numbers or availability.
 
 CRITICAL INSTRUCTIONS:
-- For search_trains: Use JSON format like {{"source": "NDLS", "destination": "BCT", "date": "16-11-2025", "quota": "GN"}}
 - Always use proper station codes (NDLS, BCT, SBC, etc.)
 - Date format must be DD-MM-YYYY
 - If user doesn't provide source/destination/date, respond with Final Answer asking for the missing information
@@ -104,13 +103,15 @@ Use the following format:
 Question: the input question you must answer
 Thought: you should always think about what to do
 Action: the action to take, should be one of [{tool_names}]
-Action Input: the input to the action (must be valid JSON for search_trains)
+Action Input: the input to the action (for search_trains, use JSON string format)
 Observation: the result of the action
 ... (this Thought/Action/Action Input/Observation can repeat N times)
 Thought: I now know the final answer
 Final Answer: the final answer to the original input question
 
-IMPORTANT: If you need information from the user, use "Final Answer" to ask them directly. Do not try to use tools to ask questions.
+IMPORTANT: 
+- If you need information from the user, use "Final Answer" to ask them directly
+- For search_trains Action Input, provide a JSON string like: {{"source": "NDLS", "destination": "BCT", "date": "25-11-2025", "quota": "GN"}}
 
 Begin!
 
