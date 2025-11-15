@@ -1,12 +1,15 @@
 from seleniumwire import webdriver as seleniumwire_webdriver 
 from selenium.webdriver.common.by import By
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 from datetime import date, timedelta, datetime
 import time
 import json
 import requests as re
+from agent import chat, clear_history
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for frontend integration
 
 driver = None
 cached_train_data = None
@@ -427,10 +430,47 @@ def train_route(train_number):
 # def book_train(train_number):
 #     train_div = driver.find_element(By.XPATH, f"//div[contains(@class, 'sc-gplwa-d eSDxjh') and .//p[contains(text(), '{train_number}')]]")
 
+@app.route("/chat", methods=["POST"])
+def chat_endpoint():
+    """
+    Chat endpoint for the AI agent
+    Accepts: {"message": "user message", "session_id": "optional_session_id"}
+    Returns: {"success": bool, "response": "agent response", "session_id": "session_id"}
+    """
+    try:
+        data = request.get_json()
+        message = data.get('message')
+        session_id = data.get('session_id', 'default')
+        
+        if not message:
+            return jsonify({"success": False, "error": "Message is required"}), 400
+        
+        result = chat(message, session_id)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "response": "Sorry, I encountered an error processing your request."
+        }), 500
 
-    
-
-
+@app.route("/chat/clear", methods=["POST"])
+def clear_chat_history():
+    """
+    Clear chat history for a session
+    Accepts: {"session_id": "optional_session_id"}
+    """
+    try:
+        data = request.get_json()
+        session_id = data.get('session_id', 'default')
+        
+        result = clear_history(session_id)
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
