@@ -426,9 +426,132 @@ def train_route(train_number):
             "status": response.status_code
         }), response.status_code
     
-# @app.route("/booktrain/getdetails/<train_number>", methods=["GET"])
-# def book_train(train_number):
-#     train_div = driver.find_element(By.XPATH, f"//div[contains(@class, 'sc-gplwa-d eSDxjh') and .//p[contains(text(), '{train_number}')]]")
+
+@app.route("/booktrain/<train_number>", methods=["GET"])
+def book_train(train_number):
+    details = {
+        "trainNumber": train_number,
+        "available_quotas": {}
+    }
+
+    train_div = driver.find_element(By.XPATH, f"//div[contains(@class, 'sc-gplwa-d') and .//p[contains(text(), '{train_number}')]]")
+    time.sleep(2)
+    train_div.find_element(By.XPATH, ".//div[contains(@class, 'ticket-new')]").click()
+    time.sleep(5)
+
+    quota_section = driver.find_element(By.XPATH, "//p[text()='Quota']/following-sibling::div")
+    quota_divs = quota_section.find_elements(By.XPATH, "./div")
+    available_quotas = [quota_div.text for quota_div in quota_divs]
+    
+    for quota_div in quota_divs:
+        quota_name = quota_div.text
+        quota_div.click()
+        time.sleep(5)
+        
+        details["available_quotas"][quota_name] = {}
+        
+        class_section = driver.find_element(By.XPATH, "//p[text()='Class']/following-sibling::div")
+        class_divs = class_section.find_elements(By.XPATH, "./div")
+        
+        for class_div in class_divs:
+            class_name = class_div.text
+            class_div.click()
+            time.sleep(5)
+
+            day_data = []
+            daylist_divs = driver.find_elements(By.XPATH, "//div[contains(@class, 'day')]")
+
+            for day_div in daylist_divs:
+                date_element = day_div.find_element(By.XPATH, ".//p[contains(@style, 'font-weight: 600')]")
+                date_text = date_element.text
+                
+                availability_element = day_div.find_element(By.XPATH, ".//p[contains(@style, 'color: rgb(165, 164, 166)') or contains(@style, 'font-weight: 600')]")
+                availability_text = availability_element.text
+                
+                availability_element.click()
+                time.sleep(3)
+                price_element = driver.find_element(By.XPATH, "//span[contains(@style, 'font-size: 20px; font-weight: 600; color: rgb(42, 42, 42)')]")
+                price_text = price_element.text
+
+                day_data.append({
+                    "date": date_text,
+                    "availability": availability_text,
+                    "price": price_text
+                })
+            
+            details["available_quotas"][quota_name][class_name] = day_data
+    
+    return jsonify(details)
+
+@app.route("/booktrain/", methods=["POST"])
+def book_train():
+    data = request.get_json()
+    train_number = data.get('train_number')
+    quota = data.get('quota')
+    travel_class = data.get('class')
+    journey_date = data.get('journey_date')
+
+    passenger_details = data.get('passenger_details')
+
+    train_div = driver.find_element(By.XPATH, f"//div[contains(@class, 'sc-gplwa-d') and .//p[contains(text(), '{train_number}')]]")
+    time.sleep(2)
+    train_div.find_element(By.XPATH, ".//div[contains(@class, 'ticket-new')]").click()
+    time.sleep(5)
+
+    quota_div = driver.find_element(By.XPATH, f"//div[.//text()[contains(., '{quota}')]]")
+    quota_div.click()
+    time.sleep(5)
+    
+    class_div = driver.find_element(By.XPATH, f"//div[.//text()[contains(., '{travel_class}')]]")
+    class_div.click()
+    time.sleep(5)
+    
+    date_div = driver.find_element(By.XPATH, f"//div[.//p[contains(text(), '{journey_date}')]]")
+    date_div.click()
+    time.sleep(3)
+
+    book_button = driver.find_element(By.XPATH, f"//button[contains(text(), 'BOOK TICKET')]")
+    book_button.click()
+    time.sleep(3)
+
+    confirm_button = driver.find_element(By.XPATH, f"//button[contains(text(), 'Confirm')]")
+    confirm_button.click()
+    time.sleep(15)
+
+    c = 0
+    for passenger in passenger_details:
+        if(c == 1):
+            driver.find_element(By.XPATH, "//button[contains(text(), 'Add Passenger')]").click()
+            time.sleep(3)
+            driver.find_element(By.XPATH, "//button[contains(text(), 'Add Passenger')]").click()
+            time.sleep(3)
+        gender = passenger.get('gender')
+        driver.find_element(By.XPATH, f"//div[contains(text(), '{gender}')]").click()
+        driver.find_element(By.ID, "name").send_keys(passenger.get('name'))
+        driver.find_element(By.ID, "age").send_keys(str(passenger.get('age')))
+
+    try:
+        if(passenger.get('food_preference') == "Non Vegetarian"):
+            driver.find_element(By.XPATH, "//div[contains(text(), 'Non Vegetarian')]").click()
+            time.sleep(3)
+            driver.find_element(By.XPATH, "//div[contains(text(), 'Non Vegetarian')]").click()
+            time.sleep(2)
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        pass
+
+    try:
+        if(passenger.get('berth_preference')):
+            driver.find_element(By.XPATH, f"//div[contains(text(), 'berth_preference']").click()
+            time.sleep(3)
+            driver.find_element(By.XPATH, f"//div[contains(text(), '{passenger.get('berth_preference')}')]").click()
+            time.sleep(2)
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+        pass
+    driver.find_element(By.XPATH, "//button[contains(text(), 'Review Journey')]").click()
+
 
 @app.route("/chat", methods=["POST"])
 def chat_endpoint():
