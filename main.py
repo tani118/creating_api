@@ -50,18 +50,77 @@ def init_driver():
     return driver
 """
 
+# def init_driver():
+#     global driver
+#     if driver is None:
+#         options = seleniumwire_webdriver.ChromeOptions()
+#         options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
+#         driver = seleniumwire_webdriver.Chrome(options=options)
+#     else:
+#         # Check if session is still valid
+#         try:
+#             driver.current_url  # This will raise exception if session is invalid
+#         except:
+#             # Session is invalid, create new driver
+#             try:
+#                 driver.quit()
+#             except:
+#                 pass
+#             driver = None
+#             options = seleniumwire_webdriver.ChromeOptions()
+#             options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
+#             driver = seleniumwire_webdriver.Chrome(options=options)
+#     return driver
+
+
 def init_driver():
     global driver
     if driver is None:
         options = seleniumwire_webdriver.ChromeOptions()
         options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
+        
+        # Disable blink features that check for focus
+        options.add_argument('--disable-blink-features=AutomationControlled')
+        
+        # Disable background timer throttling (helps with hidden tabs)
+        options.add_argument('--disable-backgrounding-occluded-windows')
+        options.add_argument('--disable-renderer-backgrounding')
+        
+        # Disable hang monitor to prevent timeouts
+        options.add_argument('--disable-hang-monitor')
+        
+        # Enable DOM automation features
+        options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        options.add_experimental_option('useAutomationExtension', False)
+        
+        # Set window size (required for some dynamic content)
+        options.add_argument('--window-size=1920,1080')
+        
+        # Optional: Start minimized but functional
+        # options.add_argument('--start-minimized')
+        
         driver = seleniumwire_webdriver.Chrome(options=options)
+        
+        # Execute CDP commands to mask automation
+        driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+            'source': '''
+                Object.defineProperty(document, 'hidden', {
+                    get: function() { return false; }
+                });
+                Object.defineProperty(document, 'visibilityState', {
+                    get: function() { return 'visible'; }
+                });
+                window.focus = function() {};
+                Object.defineProperty(navigator, 'webdriver', {
+                    get: () => undefined
+                });
+            '''
+        })
+        
     else:
-        # Check if session is still valid
         try:
-            driver.current_url  # This will raise exception if session is invalid
+            driver.current_url
         except:
-            # Session is invalid, create new driver
             try:
                 driver.quit()
             except:
@@ -69,7 +128,31 @@ def init_driver():
             driver = None
             options = seleniumwire_webdriver.ChromeOptions()
             options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
+            options.add_argument('--disable-blink-features=AutomationControlled')
+            options.add_argument('--disable-backgrounding-occluded-windows')
+            options.add_argument('--disable-renderer-backgrounding')
+            options.add_argument('--disable-hang-monitor')
+            options.add_experimental_option("excludeSwitches", ["enable-automation"])
+            options.add_experimental_option('useAutomationExtension', False)
+            options.add_argument('--window-size=1920,1080')
+            
             driver = seleniumwire_webdriver.Chrome(options=options)
+            
+            driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
+                'source': '''
+                    Object.defineProperty(document, 'hidden', {
+                        get: function() { return false; }
+                    });
+                    Object.defineProperty(document, 'visibilityState', {
+                        get: function() { return 'visible'; }
+                    });
+                    window.focus = function() {};
+                    Object.defineProperty(navigator, 'webdriver', {
+                        get: () => undefined
+                    });
+                '''
+            })
+    
     return driver
 
 @app.route("/closeBrowser", methods=["GET"])
@@ -856,6 +939,7 @@ def signin():
             "details": str(e)
         }), 500
 
+
 @app.route("/ask-otp-signin", methods=["POST"])
 def enter_otp_signin():
     global driver
@@ -883,17 +967,24 @@ def enter_otp_signin():
         time.sleep(10)
         print("Sign-in process completed!")
         
-        # Click final submit button
-        submit_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//*[@id='drawer-footer']/span/button"))
-        )
-        submit_button.click()
-        time.sleep(3)
+        # Try to click final submit button (might not exist)
+        try:
+            submit_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//*[@id='drawer-footer']/span/button"))
+            )
+            submit_button.click()
+            time.sleep(3)
+            print("Submit button clicked successfully")
+        except Exception as e:
+            print(f"Submit button not found or not needed: {e}")
+            # This is okay - the sign-in might be complete without this button
 
         return jsonify({"message": "User logged in successfully"}), 200
     
     except Exception as e:
         print(f"Error during sign-in OTP: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": "Failed to complete sign-in", "details": str(e)}), 500
     
 @app.route("/chat", methods=["POST"])
