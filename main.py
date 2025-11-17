@@ -723,18 +723,35 @@ def book_train_submit():
 
 @app.route("/otp-booking", methods=["POST"])
 def enter_otp():
-    data = request.json
-    otp = data.get('otp')
+    global driver
+    try:
+        data = request.json
+        otp = data.get('otp')
+        
+        if not otp:
+            return jsonify({"error": "OTP is required"}), 400
+        
+        if driver is None:
+            return jsonify({"error": "No active session. Please start booking first."}), 400
 
-    otp_field = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[1]/input")
-    otp_field.send_keys(otp)
-    time.sleep(2)
+        # Find and fill OTP field
+        otp_field = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[1]/input"))
+        )
+        otp_field.clear()
+        otp_field.send_keys(otp)
+        time.sleep(2)
 
-    driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[2]/button[1]").click()
-    time.sleep(10)
-    print("Booking process completed!")
+        # Click verify button
+        verify_button = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[2]/button[1]")
+        verify_button.click()
+        time.sleep(10)
+        print("Booking process completed!")
 
-    return jsonify({"message": "OTP Entered, now show the payment page"})
+        return jsonify({"message": "OTP Entered, now show the payment page"}), 200
+    except Exception as e:
+        print(f"Error during booking OTP: {e}")
+        return jsonify({"error": "Failed to submit OTP", "details": str(e)}), 500
 @app.route("/show-payment-page", methods=["GET"])
 def show_payment_page():
     try:
@@ -841,24 +858,39 @@ def signin():
 
 @app.route("/ask-otp-signin", methods=["POST"])
 def enter_otp_signin():
+    global driver
     try:
         data = request.get_json()
         otp = data.get('otp')
+        
+        if not otp:
+            return jsonify({"error": "OTP is required"}), 400
+        
+        if driver is None:
+            return jsonify({"error": "No active session. Please sign in first."}), 400
 
-        otp_field = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[1]/input")
+        # Find and fill OTP field
+        otp_field = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[1]/input"))
+        )
+        otp_field.clear()
         otp_field.send_keys(otp)
         time.sleep(2)
 
-        driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[2]/button[1]").click()
+        # Click verify button
+        verify_button = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[2]/button[1]")
+        verify_button.click()
         time.sleep(10)
         print("Sign-in process completed!")
         
-        submit_button = driver.find_element(By.XPATH, "//*[@id='drawer-footer']/span/button")
+        # Click final submit button
+        submit_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//*[@id='drawer-footer']/span/button"))
+        )
         submit_button.click()
-
         time.sleep(3)
 
-        return jsonify({"message": "User logged in successfully"})
+        return jsonify({"message": "User logged in successfully"}), 200
     
     except Exception as e:
         print(f"Error during sign-in OTP: {e}")
