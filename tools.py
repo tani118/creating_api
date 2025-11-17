@@ -62,10 +62,13 @@ def search_trains(query: str) -> str:
 
 
 @tool
-def get_available_trains() -> str:
+def get_available_trains(dummy: str = "") -> str:
     """
     Get all trains that have available seats from the cached search results.
     Must call search_trains first.
+    
+    Args:
+        dummy: Not used, just for compatibility (can pass empty string or any value)
     
     Returns:
         JSON string with available trains, their classes, fares, and timings
@@ -137,9 +140,12 @@ def get_cheapest_trains(train_class: Optional[str] = None) -> str:
 
 
 @tool
-def get_fastest_trains() -> str:
+def get_fastest_trains(dummy: str = "") -> str:
     """
     Get the fastest trains sorted by journey duration.
+    
+    Args:
+        dummy: Not used, just for compatibility (can pass empty string or any value)
     Only shows trains with available seats.
     
     Returns:
@@ -313,10 +319,13 @@ def get_train_route(train_number: str, journey_date: str, starting_station: str)
 
 
 @tool
-def get_trains_summary() -> str:
+def get_trains_summary(dummy: str = "") -> str:
     """
     Get a summary of all searched trains including statistics.
     Shows total trains, available seats, waitlist, RAC, train types, and available classes.
+    
+    Args:
+        dummy: Not used, just for compatibility (can pass empty string or any value)
     
     Returns:
         Summary statistics of the cached train data
@@ -375,3 +384,188 @@ For now, you can:
 1. Note down the train details
 2. Visit IRCTC website to complete booking
 3. Or wait for the booking feature to be completed"""
+
+
+@tool
+def get_trains_by_class(class_code: str) -> str:
+    """
+    Get all trains that have available seats in a specific class.
+    Use this when user asks for trains in specific class like "3AC", "2AC", "Sleeper", etc.
+    Must call search_trains first.
+    
+    Args:
+        class_code: Class code like "3A", "2A", "SL", "CC", "2S", "1A"
+    
+    Returns:
+        JSON string with trains having the specified class available
+    """
+    try:
+        response = requests.get(
+            f"{BACKEND_URL}/trains/by-class/{class_code.upper()}",
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            trains = data.get('trains', [])
+            
+            if not trains:
+                return f"No trains found with {class_code} class available."
+            
+            result = f"Found {len(trains)} trains with {class_code} class:\n\n"
+            for i, train in enumerate(trains[:10], 1):
+                result += f"{i}. Train {train['trainNumber']} - {train['trainName']}\n"
+                result += f"   Departure: {train['departureTime']} | Arrival: {train['arrivalTime']}\n"
+                result += f"   Duration: {train['duration']} | Status: {train['status']}\n"
+                result += f"   Fare: ₹{train['fare']}\n\n"
+            
+            return result
+        else:
+            return f"Error fetching trains by class: {response.status_code}"
+    except Exception as e:
+        return f"Error calling API: {str(e)}"
+
+
+@tool
+def get_trains_by_type(train_type: str) -> str:
+    """
+    Get trains filtered by train type.
+    Use when user asks for specific train types like Express, Superfast, Mail, Rajdhani, etc.
+    Must call search_trains first.
+    
+    Args:
+        train_type: Type code like "EXP" (Express), "SF" (Superfast), "MAIL", "RAJ" (Rajdhani), "SHT" (Shatabdi), "DUR" (Duronto)
+    
+    Returns:
+        JSON string with trains of the specified type
+    """
+    try:
+        response = requests.get(
+            f"{BACKEND_URL}/trains/by-type/{train_type.upper()}",
+            timeout=10
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            trains = data.get('trains', [])
+            
+            if not trains:
+                return f"No {train_type} trains found."
+            
+            result = f"Found {len(trains)} {train_type} trains:\n\n"
+            for i, train in enumerate(trains[:15], 1):
+                result += f"{i}. Train {train['trainNumber']} - {train['trainName']}\n"
+                result += f"   Departure: {train['departureTime']} | Arrival: {train['arrivalTime']}\n"
+                result += f"   Duration: {train['duration']}\n"
+                result += f"   Types: {', '.join(train.get('trainType', []))}\n\n"
+            
+            return result
+        else:
+            return f"Error fetching trains by type: {response.status_code}"
+    except Exception as e:
+        return f"Error calling API: {str(e)}"
+
+
+@tool
+def get_train_booking_options(train_number: str) -> str:
+    """
+    Get detailed booking options for a specific train including availability for next 5-7 days.
+    Shows all quotas, classes, dates, availability status, and prices.
+    Use this when user wants to see multi-day availability or prepare for booking.
+    Must call search_trains first to load the train data.
+    
+    Args:
+        train_number: The train number to get booking options for
+    
+    Returns:
+        JSON string with availability across multiple days for all quota/class combinations
+    """
+    try:
+        response = requests.get(
+            f"{BACKEND_URL}/booktrain/{train_number}",
+            timeout=60  # This scrapes live data, may take time
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            result = f"Booking options for Train {train_number}:\n\n"
+            
+            for quota, classes in data.get('available_quotas', {}).items():
+                result += f"📋 Quota: {quota}\n"
+                for class_name, days in classes.items():
+                    result += f"  🎫 Class: {class_name}\n"
+                    for day in days[:5]:  # Show first 5 days
+                        result += f"    📅 {day['date']}: {day['availability']} - {day['price']}\n"
+                    result += "\n"
+            
+            return result
+        else:
+            return f"Error fetching booking options: {response.status_code}"
+    except Exception as e:
+        return f"Error calling booking options API: {str(e)}"
+
+
+@tool
+def book_train_submit(booking_data: str) -> str:
+    """
+    Submit actual train booking with passenger details.
+    Use this ONLY when user explicitly confirms they want to book and provides all required details.
+    
+    Input should be JSON string with format:
+    {
+        "train_number": "12345",
+        "quota": "General",
+        "class": "3A",
+        "journey_date": "25-11-2025",
+        "passenger_details": [
+            {"name": "John Doe", "age": 30, "gender": "Male", "berth_preference": "Lower", "food_preference": "Vegetarian"}
+        ]
+    }
+    
+    Args:
+        booking_data: JSON string with complete booking information
+    
+    Returns:
+        Booking confirmation or error message
+    """
+    try:
+        params = json.loads(booking_data)
+        
+        response = requests.post(
+            f"{BACKEND_URL}/booktrain/",
+            json=params,
+            timeout=120  # Booking may take time
+        )
+        
+        if response.status_code == 200:
+            return "✅ Booking submitted successfully! Please check IRCTC for confirmation."
+        else:
+            return f"❌ Booking failed with status {response.status_code}: {response.text}"
+    except json.JSONDecodeError as e:
+        return f"Error parsing booking data: {str(e)}"
+    except Exception as e:
+        return f"Error submitting booking: {str(e)}"
+
+
+@tool
+def close_browser(dummy: str = "") -> str:
+    """
+    Close the Selenium browser instance.
+    Use this when user explicitly asks to close browser or when done with all operations.
+    This helps free up system resources.
+    
+    Args:
+        dummy: Not used, just for compatibility (can pass empty string or any value)
+    
+    Returns:
+        Status message
+    """
+    try:
+        response = requests.get(f"{BACKEND_URL}/closeBrowser", timeout=10)
+        
+        if response.status_code == 200:
+            return "Browser closed successfully."
+        else:
+            return f"Error closing browser: {response.status_code}"
+    except Exception as e:
+        return f"Error calling close browser API: {str(e)}"

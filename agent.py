@@ -20,7 +20,12 @@ from tools import (
     filter_trains,
     get_train_route,
     get_trains_summary,
-    book_train_placeholder
+    book_train_placeholder,
+    get_trains_by_class,
+    get_trains_by_type,
+    get_train_booking_options,
+    book_train_submit,
+    close_browser
 )
 
 # Load environment variables
@@ -44,7 +49,12 @@ tools = [
     filter_trains,
     get_train_route,
     get_trains_summary,
-    book_train_placeholder
+    book_train_placeholder,
+    get_trains_by_class,
+    get_trains_by_type,
+    get_train_booking_options,
+    book_train_submit,
+    close_browser
 ]
 
 # Create the system prompt
@@ -134,9 +144,9 @@ agent_executor = AgentExecutor(
     verbose=True,
     handle_parsing_errors=True,
     max_iterations=15,
-    max_execution_time=60,
+    max_execution_time=90,
     return_intermediate_steps=False,
-    early_stopping_method="generate"  # Allow agent to respond without always using a tool
+    early_stopping_method="force"  # Force completion even if agent gets stuck
 )
 
 # Store for chat histories (in production, use Redis or DB)
@@ -179,18 +189,35 @@ def chat(message: str, session_id: str = "default") -> dict:
             "chat_history": history
         })
         
+        # Extract output
+        output = response.get("output", "")
+        
+        # If no output, return error
+        if not output or output.strip() == "":
+            output = "I apologize, but I couldn't generate a proper response. Could you please rephrase your question?"
+        
         # Save to history
         if session_id not in chat_histories:
             chat_histories[session_id] = ChatMessageHistory()
         chat_histories[session_id].add_user_message(message)
-        chat_histories[session_id].add_ai_message(response["output"])
+        chat_histories[session_id].add_ai_message(output)
         
         return {
             "success": True,
-            "response": response["output"],
+            "response": output,
+            "session_id": session_id
+        }
+    except StopIteration as e:
+        return {
+            "success": False,
+            "response": "An unexpected error occurred. Please try again.",
+            "error": "StopIteration error - agent chain interrupted",
             "session_id": session_id
         }
     except Exception as e:
+        import traceback
+        error_trace = traceback.format_exc()
+        print(f"Agent Error: {error_trace}")
         return {
             "success": False,
             "response": f"Sorry, I encountered an error: {str(e)}",
