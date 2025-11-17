@@ -661,9 +661,9 @@ def book_train_submit():
         
         gender = passenger.get('gender')
         print(f"Selecting gender: {gender}")
-        if gender is "Male":
+        if gender == "Male":
             driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[2]/div[1]/div/span/div[1]/div[1]/div").click()
-        elif gender is "Female":
+        elif gender == "Female":
             driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[2]/div[1]/div/span/div[1]/div[2]/div").click()
 
 

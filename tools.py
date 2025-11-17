@@ -58,7 +58,7 @@ def search_trains(query: str) -> str:
                 "JDATE": formatted_date,
                 "JQUOTA": quota
             },
-            timeout=30
+            timeout=60
         )
         
         if response.status_code == 200:

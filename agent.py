@@ -1,10 +1,12 @@
 """
-LangChain Agent for Train Booking using Groq Llama 3.3 70B
+LangChain Agent for Train Booking
+Supports Google Gemini and Groq (cloud) models
 Handles complete conversation flow from search to booking
 """
 import os
 from dotenv import load_dotenv
 from langchain_groq import ChatGroq
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.agents import AgentExecutor, create_react_agent
 from langchain_core.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
@@ -36,13 +38,24 @@ from tools import (
 # Load environment variables
 load_dotenv()
 
-# Initialize Groq LLM
-llm = ChatGroq(
-    model="llama-3.3-70b-versatile",
-    temperature=0.1,  # Low temperature for consistent responses
-    groq_api_key=os.getenv("GROQ_API_KEY"),
-    max_tokens=2048
+# Initialize LLM - Choose one option below:
+
+# Option 1: Google Gemini (Recommended - Fast, Smart, Free tier available)
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",  # Stable model with 15 RPM limit. Other options: "gemini-1.5-pro"
+    temperature=0.1,
+    google_api_key=os.getenv("GOOGLE_API_KEY"),
+    max_output_tokens=2048
+    # convert_system_message_to_human is deprecated and no longer needed
 )
+
+# Option 2: Groq (Cloud-based, requires API key)
+# llm = ChatGroq(
+#     model="llama-3.3-70b-versatile",
+#     temperature=0.1,
+#     groq_api_key=os.getenv("GROQ_API_KEY"),
+#     max_tokens=2048
+# )
 
 # Define all available tools
 tools = [
@@ -149,7 +162,7 @@ agent_executor = AgentExecutor(
     tools=tools,
     verbose=True,
     handle_parsing_errors=True,
-    max_iterations=15,
+    max_iterations=10,  # Reduced from 15 for better performance with smaller models
     max_execution_time=90,
     return_intermediate_steps=False,
     early_stopping_method="force"  # Force completion even if agent gets stuck
