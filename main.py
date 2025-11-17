@@ -815,12 +815,12 @@ def signin():
             time.sleep(3)
         
         # Enter phone number
-        phone_input = driver.find_element(By.XPATH, "//*[@id='mobile']")
+        phone_input = driver.find_element(By.XPATH, "//*[@id='disha-drawer-1']/div/div[1]/div[2]/div/div/div[2]/input")
         phone_input.send_keys(phone_number)
         time.sleep(2)
         
         # Click request OTP button
-        request_otp_button = driver.find_element(By.XPATH, "//*[@id='disha-drawer-1']/div/div[1]/div[2]/div/div/div[2]/button")
+        request_otp_button = driver.find_element(By.XPATH, "//*[@id='drawer-footer']/span/button")
         request_otp_button.click()
         time.sleep(3)
         
