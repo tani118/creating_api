@@ -103,7 +103,7 @@ def init_driver():
         
         # Move browser window off-screen (but keep it "visible" to the OS)
         # Temporarily disabled for debugging - uncomment when ready
-        # driver.set_window_position(-2000, 0)  # Move to left off-screen
+        driver.set_window_position(-2000, 0)  # Move to left off-screen
         
         # Execute CDP commands to mask automation
         driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
@@ -142,8 +142,8 @@ def init_driver():
             
             driver = seleniumwire_webdriver.Chrome(options=options)
             
-            # Move off-screen - Temporarily disabled for debugging
-            # driver.set_window_position(-2000, 0)
+            # Move off-screen
+            driver.set_window_position(-2000, 0)
             
             driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
                 'source': '''
@@ -725,12 +725,12 @@ def book_train_submit():
     
     time.sleep(2)
     print("Clicking ticket button...")
-    ticket_buttons = train_card.find_elements(By.XPATH, ".//div[contains(@class, 'ticket-new')]")
-    if ticket_buttons:
+    try:
+        ticket_buttons = train_card.find_elements(By.XPATH, ".//div[contains(@class, 'ticket-new')]")
         ticket_buttons[0].click()
         time.sleep(5)
-    else:
-        return {"error": "No ticket buttons found"}
+    except:
+        pass
 
     print(f"Selecting quota: {quota}")
     quota_section = driver.find_element(By.XPATH, "//p[text()='Quota']/following-sibling::div")
@@ -914,9 +914,12 @@ def show_payment_page():
         if not driver:
             return jsonify({"error": "No active browser session"}), 400
         
-        # Move browser to visible area (don't maximize, it can break some sites)
+        # Move browser to visible area and maximize
         driver.set_window_position(0, 0)
-        driver.set_window_size(1920, 1080)
+        driver.maximize_window()
+        
+        # Bring window to front/focus using JavaScript
+        driver.execute_script("window.focus();")
         
         current_url = driver.current_url
         
@@ -940,8 +943,7 @@ def hide_browser():
             return jsonify({"error": "No active browser session"}), 400
         
         # Move off-screen (don't minimize - it breaks JavaScript execution)
-        # Temporarily disabled for debugging - browser will stay visible
-        # driver.set_window_position(-2000, 0)
+        driver.set_window_position(-2000, 0)
         
         return jsonify({
             "message": "Browser hidden successfully",

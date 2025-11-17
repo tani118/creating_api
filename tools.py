@@ -16,11 +16,17 @@ def search_trains(query: str) -> str:
     Search for trains between two stations on a specific date.
     Use this tool when user asks to find trains or search for trains.
     
+    IMPORTANT: Always ask the user for the quota before searching. Common quotas are:
+    - GN (General) - Default for most bookings
+    - TQ (Tatkal) - Last minute bookings
+    - LD (Ladies) - Ladies quota
+    - PT (Premium Tatkal) - Higher fare tatkal
+    
     Input should be a JSON string with format:
     {"source": "NDLS", "destination": "BCT", "date": "25-11-2025", "quota": "GN"}
     
     Args:
-        query: JSON string containing source, destination, date, and optional quota
+        query: JSON string containing source, destination, date, and quota (all required)
     
     Returns:
         JSON string with train details including availability
@@ -31,10 +37,10 @@ def search_trains(query: str) -> str:
         source = params.get("source", "").upper()
         destination = params.get("destination", "").upper()
         date = params.get("date", "")
-        quota = params.get("quota", "GN").upper()
+        quota = params.get("quota", "").upper()
         
-        if not all([source, destination, date]):
-            return json.dumps({"error": "Missing required fields: source, destination, or date"})
+        if not all([source, destination, date, quota]):
+            return json.dumps({"error": "Missing required fields: source, destination, date, or quota. Please ask user for quota if not provided."})
         
         try:
             # Validate date format
