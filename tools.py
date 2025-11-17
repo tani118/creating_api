@@ -6,6 +6,7 @@ import requests
 from langchain.tools import tool
 from typing import Optional
 import json
+from datetime import datetime
 
 BACKEND_URL = "http://localhost:5000"
 
@@ -35,6 +36,20 @@ def search_trains(query: str) -> str:
         if not all([source, destination, date]):
             return json.dumps({"error": "Missing required fields: source, destination, or date"})
         
+        try:
+            # Validate date format
+            datetime.strptime(date, "%d-%m-%Y")
+            formatted_date = datetime.strptime(date, "%d-%m-%Y").strftime("%Y%m%d")
+        except ValueError:
+            return json.dumps({"error": "Invalid date format. Use DD-MM-YYYY"})
+
+        try:
+            # Validate date format
+            datetime.strptime(date, "%d-%m-%Y")
+            formatted_date = datetime.strptime(date, "%d-%m-%Y").strftime("%Y%m%d")
+        except ValueError:
+            return json.dumps({"error": "Invalid date format. Use DD-MM-YYYY"})
+
         response = requests.post(
             f"{BACKEND_URL}/getTrainDetailsWithRefresh",
             json={

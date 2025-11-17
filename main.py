@@ -117,18 +117,6 @@ def getTrainDetailsWithRefresh():
     
     return jsonify({"status": 500, "message": "No response captured"}), 500
 
-@app.route("/debug/cache", methods=["GET"])
-def debug_cache():
-    """Debug endpoint to view complete cached data"""
-    if not cached_train_data:
-        return jsonify({"error": "No data cached yet"}), 400
-    
-    return jsonify({
-        "cache_structure": list(cached_train_data.keys()),
-        "total_trains": len(cached_train_data.get('trainBtwnStnsList', [])),
-        "full_data": cached_train_data
-    })
-
 @app.route("/trains/available", methods=["GET"])
 def get_available_trains():
     """
@@ -673,6 +661,112 @@ def clear_chat_history():
             "success": False,
             "error": str(e)
         }), 500
+    
+@app.route("/test/cache", methods=["GET"])
+def test_cache():
+    """
+    Test endpoint to check cache status and view sample data.
+    Shows if cache is populated and displays sample train with avlDayList structure.
+    """
+    if not cached_train_data:
+        return jsonify({
+            "cache_status": "empty",
+            "message": "No cached data available. Call /getTrainDetailsWithRefresh first"
+        }), 200
+    
+    trains = cached_train_data.get('trainBtwnStnsList', [])
+    
+    # Collect avlDayList from first train for all classes
+    sample_availability_details = []
+    if trains and trains[0].get('availability'):
+        for avl in trains[0]['availability'][:3]:  # First 3 classes
+            sample_availability_details.append({
+                "className": avl.get('className'),
+                "avlDayList": avl.get('details', {}).get('avlDayList', {})
+            })
+    
+    return jsonify({
+        "cache_status": "active",
+        "cached_at": cached_train_data.get('timeStamp'),
+        "total_trains": len(trains),
+        "sample_train": {
+            "trainNumber": trains[0].get('trainNumber'),
+            "trainName": trains[0].get('trainName')
+        } if trains else None,
+        "source_destination": {
+            "from": trains[0].get('fromStnCode') if trains else None,
+            "to": trains[0].get('toStnCode') if trains else None
+        },
+        "sample_availability_details": sample_availability_details
+    })
+
+@app.route("/test/cache/clear", methods=["POST"])
+def clear_cache():
+    """
+    Clear the cached train data.
+    Use this to reset cache and force a fresh search.
+    """
+    global cached_train_data
+    cached_train_data = None
+    return jsonify({
+        "message": "Cache cleared successfully",
+        "cache_status": "empty"
+    })
+
+@app.route("/test/cache/stats", methods=["GET"])
+def cache_stats():
+    """
+    Get detailed statistics about cached train data.
+    Shows breakdown by train types, classes, availability status, etc.
+    """
+    if not cached_train_data:
+        return jsonify({
+            "cache_status": "empty",
+            "message": "No cached data available"
+        }), 200
+    
+    trains = cached_train_data.get('trainBtwnStnsList', [])
+    
+    # Count trains by type
+    train_type_counts = {}
+    class_counts = {}
+    available_count = 0
+    waitlist_count = 0
+    rac_count = 0
+    
+    for train in trains:
+        for t_type in train.get('trainType', []):
+            train_type_counts[t_type] = train_type_counts.get(t_type, 0) + 1
+        
+        for avl in train.get('availability', []):
+            class_name = avl.get('className')
+            class_counts[class_name] = class_counts.get(class_name, 0) + 1
+            
+            status = avl.get('details', {}).get('avlDayList', {}).get('availablityStatus', '')
+            if status.startswith('AVAILABLE'):
+                available_count += 1
+            elif 'WL' in status:
+                waitlist_count += 1
+            elif 'RAC' in status:
+                rac_count += 1
+    
+    return jsonify({
+        "cache_status": "active",
+        "cached_at": cached_train_data.get('timeStamp'),
+        "statistics": {
+            "total_trains": len(trains),
+            "available_seats": available_count,
+            "waitlist_seats": waitlist_count,
+            "rac_seats": rac_count,
+            "train_types": train_type_counts,
+            "class_distribution": class_counts
+        },
+        "route": {
+            "source": trains[0].get('fromStnCode') if trains else None,
+            "destination": trains[0].get('toStnCode') if trains else None
+        }
+    })
+
 
 if __name__ == "__main__":
     app.run(debug=True, host='0.0.0.0', port=5000)
