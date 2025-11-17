@@ -141,7 +141,7 @@ def book_train_submit():
         if(idx != 0):
             print(f"Adding passenger {idx + 1}...")
             time.sleep(3)
-            add_passenger_button = driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[3]/button/svg")
+            add_passenger_button = driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[3]/button")
             add_passenger_button.click()
             time.sleep(3)
         
