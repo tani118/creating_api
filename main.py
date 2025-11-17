@@ -96,10 +96,14 @@ def init_driver():
         # Set window size (required for some dynamic content)
         options.add_argument('--window-size=1920,1080')
         
-        # Optional: Start minimized but functional
-        # options.add_argument('--start-minimized')
+        # Don't minimize - it breaks JavaScript execution
+        # Instead, we'll move window off-screen after creation
         
         driver = seleniumwire_webdriver.Chrome(options=options)
+        
+        # Move browser window off-screen (but keep it "visible" to the OS)
+        # Temporarily disabled for debugging - uncomment when ready
+        # driver.set_window_position(-2000, 0)  # Move to left off-screen
         
         # Execute CDP commands to mask automation
         driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
@@ -137,6 +141,9 @@ def init_driver():
             options.add_argument('--window-size=1920,1080')
             
             driver = seleniumwire_webdriver.Chrome(options=options)
+            
+            # Move off-screen - Temporarily disabled for debugging
+            # driver.set_window_position(-2000, 0)
             
             driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
                 'source': '''
@@ -761,9 +768,13 @@ def book_train_submit():
     time.sleep(50)
 
     print("Confirming booking...")
-    confirm_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Confirm')]")
-    confirm_button.click()
-    time.sleep(15)
+    try :
+        confirm_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Confirm')]")
+        confirm_button.click()
+        time.sleep(15)
+    except Exception as e:
+        print(f"Confirm button not found or already clicked: {e}")
+        pass
 
     print("Filling passenger details...")
     for idx, passenger in enumerate(passenger_details):
@@ -785,6 +796,11 @@ def book_train_submit():
         
         print(f"Entering age: {passenger.get('age')}")
         driver.find_element(By.ID, "age").send_keys(str(passenger.get('age')))
+
+        print("Clicking ADD Passenger")
+        book_button = driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[3]/button")
+        book_button.click()
+        time.sleep(50)
 
         print("Clicking Review Journey...")
         driver.find_element(By.XPATH, "//*[@id='pass-step']/button").click()
@@ -841,8 +857,9 @@ def show_payment_page():
         if not driver:
             return jsonify({"error": "No active browser session"}), 400
         
-        driver.maximize_window()
+        # Move browser to visible area (don't maximize, it can break some sites)
         driver.set_window_position(0, 0)
+        driver.set_window_size(1920, 1080)
         
         current_url = driver.current_url
         
@@ -865,8 +882,9 @@ def hide_browser():
         if not driver:
             return jsonify({"error": "No active browser session"}), 400
         
-        driver.minimize_window()
-        driver.set_window_position(-2400, -2400)
+        # Move off-screen (don't minimize - it breaks JavaScript execution)
+        # Temporarily disabled for debugging - browser will stay visible
+        # driver.set_window_position(-2000, 0)
         
         return jsonify({
             "message": "Browser hidden successfully",
