@@ -712,6 +712,58 @@ def submit_booking_otp(otp: str) -> str:
     except Exception as e:
         return f"❌ Error calling OTP API: {str(e)}"
 
+@tool
+def get_city_stations(city_name: str) -> str:
+    """
+    Get list of railway stations for a given city name.
+    
+    Args:
+        city_name: Name of the city to search stations for (e.g., "Delhi", "Mumbai", "Bangalore")
+
+    Returns:
+        Formatted string with list of stations in the city
+    """
+    try:
+        # Load the JSON file
+        import os
+        json_path = os.path.join(os.path.dirname(__file__), 'indian_railway_stations.json')
+        
+        with open(json_path, 'r') as f:
+            stations_data = json.load(f)
+        
+        # Search for city (case-insensitive)
+        city_key = None
+        for key in stations_data.keys():
+            if key.lower() == city_name.lower():
+                city_key = key
+                break
+        
+        if not city_key:
+            # Try partial match
+            for key in stations_data.keys():
+                if city_name.lower() in key.lower() or key.lower() in city_name.lower():
+                    city_key = key
+                    break
+        
+        if not city_key:
+            return f"❌ No stations found for city: {city_name}\n\nAvailable cities: {', '.join(list(stations_data.keys())[:20])}..."
+        
+        stations = stations_data[city_key]
+        
+        if not stations:
+            return f"No stations found for city: {city_key}"
+        
+        result = f"🚉 Stations in {city_key}:\n\n"
+        for i, (code, name) in enumerate(stations.items(), 1):
+            result += f"{i}. {code} - {name}\n"
+        
+        return result
+    except FileNotFoundError:
+        return "❌ Error: indian_railway_stations.json file not found"
+    except json.JSONDecodeError:
+        return "❌ Error: Invalid JSON format in stations file"
+    except Exception as e:
+        return f"❌ Error reading stations data: {str(e)}"
 
 @tool
 def show_payment_page(dummy: str = "") -> str:
