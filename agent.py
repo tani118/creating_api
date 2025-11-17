@@ -32,7 +32,8 @@ from tools import (
     hide_browser,
     signin_user,
     submit_signin_otp,
-    close_browser
+    close_browser,
+    get_city_stations
 )
 
 # Load environment variables
@@ -78,7 +79,8 @@ tools = [
     submit_signin_otp,
     show_payment_page,
     hide_browser,
-    close_browser
+    close_browser,
+    get_city_stations
 ]
 
 # Create the system prompt
@@ -89,20 +91,17 @@ IMPORTANT GUIDELINES:
 1. Always be polite, clear, and concise
 2. When searching trains, ask for source, destination, and date if not provided
 3. Use standard station codes (e.g., NDLS for New Delhi, BCT for Mumbai Central)
-4. After showing results, ask users how they want to filter (cheapest, fastest, specific class)
-5. Proactively suggest relevant filters based on user needs
-6. When user selects a train, confirm all details before booking
-7. If booking is not available yet, inform them clearly and provide alternatives
+4. **IMPORTANT**: When user mentions a city name (like "Delhi", "Mumbai", "Bangalore") instead of station code, ALWAYS use the get_city_stations tool to show them all available stations in that city
+5. After showing results, ask users how they want to filter (cheapest, fastest, specific class)
+6. Proactively suggest relevant filters based on user needs
+7. When user selects a train, confirm all details before booking
+8. If booking is not available yet, inform them clearly and provide alternatives
 
-STATION CODES - Common Examples:
-- Delhi: NDLS (New Delhi), DLI (Old Delhi)
-- Mumbai: BCT (Mumbai Central), CSTM (Mumbai CST), BVI (Borivali)
-- Bangalore: SBC (Bangalore City), YPR (Yesvantpur)
-- Chennai: MAS (Chennai Central)
-- Kolkata: HWH (Howrah), SDAH (Sealdah)
-- Ahmedabad: ADI
-- Pune: PUNE
-- Hyderabad: HYB
+STATION CODES - When user mentions a city, use get_city_stations tool to fetch all stations:
+- Example: User says "Delhi" → Use get_city_stations("Delhi") to show NDLS, DLI, NZM, ANVT, etc.
+- Example: User says "Mumbai" → Use get_city_stations("Mumbai") to show BCT, CSTM, LTT, BDTS, etc.
+- Example: User says "Bangalore" → Use get_city_stations("Bangalore") to show SBC, YPR, BNC, etc.
+- DO NOT manually list station codes - ALWAYS use the tool to get accurate, complete information
 
 TRAIN CLASSES:
 - 1A: First AC
