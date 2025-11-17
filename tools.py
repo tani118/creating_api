@@ -114,6 +114,8 @@ def get_available_trains(dummy: str = "") -> str:
     except Exception as e:
         return f"Error getting available trains: {str(e)}"
 
+@tool
+
 
 @tool
 def get_cheapest_trains(train_class: Optional[str] = None) -> str:
@@ -370,35 +372,153 @@ def get_trains_summary(dummy: str = "") -> str:
         return f"Error getting summary: {str(e)}"
 
 
-# Note: Actual booking functionality will be added once the booking endpoint is implemented
 @tool
-def book_train_placeholder(train_number: str, passenger_name: str, age: int, gender: str, train_class: str) -> str:
+def get_train_booking_options(train_number: str) -> str:
     """
-    Placeholder for train booking functionality.
-    Currently, the backend booking endpoint is not yet implemented.
+    Get detailed booking options for a specific train including availability for next 5-7 days.
+    Shows all quotas, classes, dates, availability status, and prices.
+    Use this when user wants to see multi-day availability or prepare for booking.
+    Must have searched trains first and have the browser open with train results.
     
     Args:
-        train_number: The train number to book
-        passenger_name: Passenger's full name
-        age: Passenger's age
-        gender: Passenger's gender (M/F/T)
-        train_class: Class to book (e.g., '3A', 'SL', '2A')
+        train_number: The train number to get booking options for
+    
+    Returns:
+        JSON string with availability across multiple days for all quota/class combinations
+    """
+    try:
+        response = requests.get(
+            f"{BACKEND_URL}/booktrain/{train_number}",
+            timeout=60  # This scrapes live data, may take time
+        )
+        
+        if response.status_code == 200:
+            data = response.json()
+            result = f"Booking options for Train {train_number}:\n\n"
+            
+            for quota, classes in data.get('available_quotas', {}).items():
+                result += f"📋 Quota: {quota}\n"
+                for class_name, days in classes.items():
+                    result += f"  🎫 Class: {class_name}\n"
+                    for day in days[:5]:  # Show first 5 days
+                        result += f"    📅 {day['date']}: {day['availability']} - {day['price']}\n"
+                    result += "\n"
+            
+            return result
+        else:
+            return f"Error fetching booking options: {response.status_code}. Make sure you've searched for trains first."
+    except Exception as e:
+        return f"Error calling booking options API: {str(e)}"
+
+
+@tool
+def book_train(booking_data: str) -> str:
+    """
+    Submit train booking with passenger details.
+    Use this ONLY when user explicitly confirms they want to book and provides ALL required details.
+    
+    IMPORTANT: You must collect ALL these details from the user before calling this tool:
+    - Train number
+    - Quota (e.g., "General", "Tatkal", "Ladies")
+    - Class (e.g., "3A", "2A", "SL", "CC")
+    - Journey date (format: "DD Mon" like "20 Nov")
+    - Passenger details for EACH passenger:
+      * Name (full name)
+      * Age (number)
+      * Gender ("Male", "Female", "Transgender")
+      * Berth preference (optional: "Lower", "Middle", "Upper", "Side Lower", "Side Upper")
+      * Food preference (optional: "Vegetarian", "Non Vegetarian")
+    
+    Input should be JSON string with format:
+    {
+        "train_number": "12345",
+        "quota": "General",
+        "class": "3A",
+        "journey_date": "20 Nov",
+        "passenger_details": [
+            {
+                "name": "John Doe",
+                "age": 30,
+                "gender": "Male",
+                "berth_preference": "Lower",
+                "food_preference": "Vegetarian"
+            }
+        ]
+    }
+    
+    Args:
+        booking_data: JSON string with complete booking information
     
     Returns:
         Booking status message
     """
-    return f"""Booking functionality is under development.
+    try:
+        params = json.loads(booking_data)
+        
+        # Validate required fields
+        required_fields = ['train_number', 'quota', 'class', 'journey_date', 'passenger_details']
+        missing_fields = [f for f in required_fields if f not in params]
+        
+        if missing_fields:
+            return f"❌ Missing required fields: {', '.join(missing_fields)}"
+        
+        # Validate passenger details
+        passengers = params.get('passenger_details', [])
+        if not passengers:
+            return "❌ At least one passenger is required"
+        
+        for i, passenger in enumerate(passengers, 1):
+            required_passenger_fields = ['name', 'age', 'gender']
+            missing_passenger_fields = [f for f in required_passenger_fields if f not in passenger]
+            
+            if missing_passenger_fields:
+                return f"❌ Passenger {i} missing fields: {', '.join(missing_passenger_fields)}"
+            
+            # Validate gender
+            valid_genders = ['Male', 'Female', 'Transgender']
+            if passenger['gender'] not in valid_genders:
+                return f"❌ Invalid gender for passenger {i}. Must be one of: {', '.join(valid_genders)}"
+            
+            # Validate age
+            try:
+                age = int(passenger['age'])
+                if age < 1 or age > 120:
+                    return f"❌ Invalid age for passenger {i}. Must be between 1 and 120"
+            except (ValueError, TypeError):
+                return f"❌ Invalid age format for passenger {i}. Must be a number"
+        
+        # Make the booking request
+        response = requests.post(
+            f"{BACKEND_URL}/booktrain/",
+            json=params,
+            timeout=120  # Booking may take time
+        )
+        
+        if response.status_code == 200:
+            result = "✅ Booking process initiated successfully!\n\n"
+            result += "📋 Booking Summary:\n"
+            result += f"Train: {params['train_number']}\n"
+            result += f"Quota: {params['quota']}\n"
+            result += f"Class: {params['class']}\n"
+            result += f"Date: {params['journey_date']}\n\n"
+            result += f"Passengers ({len(passengers)}):\n"
+            for i, p in enumerate(passengers, 1):
+                result += f"{i}. {p['name']} ({p['gender']}, {p['age']} years)\n"
+            result += "\n⚠️ IMPORTANT: The booking form has been filled on the IRCTC website."
+            result += "\nPlease review the details on the screen and complete the payment process manually."
+            result += "\nDo NOT close the browser window."
+            return result
+        else:
+            error_text = response.text if response.text else "Unknown error"
+            return f"❌ Booking failed with status {response.status_code}: {error_text}\n\nMake sure you've searched for trains first and the browser is open."
     
-Would book:
-- Train: {train_number}
-- Passenger: {passenger_name} ({gender}, {age} years)
-- Class: {train_class}
+    except json.JSONDecodeError as e:
+        return f"❌ Error parsing booking data: {str(e)}\n\nExpected JSON format with train_number, quota, class, journey_date, and passenger_details"
+    except requests.exceptions.Timeout:
+        return "❌ Booking request timed out. The process might still be running. Please check the browser."
+    except Exception as e:
+        return f"❌ Error submitting booking: {str(e)}"
 
-To complete this booking, the backend /booktrain endpoint needs to be implemented.
-For now, you can:
-1. Note down the train details
-2. Visit IRCTC website to complete booking
-3. Or wait for the booking feature to be completed"""
 
 
 @tool

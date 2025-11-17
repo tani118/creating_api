@@ -3,6 +3,8 @@ from selenium.webdriver.common.by import By
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import date, timedelta, datetime
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import time
 import json
 import requests as re
@@ -23,6 +25,30 @@ userTokens = {
         'capturedHeaders': None
     }
 }
+
+"""
+def init_driver():
+    global driver
+    if driver is None:
+        options = seleniumwire_webdriver.ChromeOptions()
+        options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
+        options.add_argument('--window-position=-2400,-2400')  # Start hidden off-screen
+        driver = seleniumwire_webdriver.Chrome(options=options)
+    else:
+        try:
+            driver.current_url
+        except:
+            try:
+                driver.quit()
+            except:
+                pass
+            driver = None
+            options = seleniumwire_webdriver.ChromeOptions()
+            options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
+            options.add_argument('--window-position=-2400,-2400')
+            driver = seleniumwire_webdriver.Chrome(options=options)
+    return driver
+"""
 
 def init_driver():
     global driver
@@ -494,61 +520,61 @@ def train_route(train_number):
         }), response.status_code
     
 
-@app.route("/booktrain/<train_number>", methods=["GET"])
-def book_train(train_number):
-    details = {
-        "trainNumber": train_number,
-        "available_quotas": {}
-    }
+# @app.route("/booktrain/<train_number>", methods=["GET"])
+# def book_train(train_number):
+#     details = {
+#         "trainNumber": train_number,
+#         "available_quotas": {}
+#     }
 
-    train_div = driver.find_element(By.XPATH, f"//div[contains(@class, 'sc-gplwa-d') and .//p[contains(text(), '{train_number}')]]")
-    time.sleep(2)
-    train_div.find_element(By.XPATH, ".//div[contains(@class, 'ticket-new')]").click()
-    time.sleep(5)
+#     train_div = driver.find_element(By.XPATH, f"//div[contains(@class, 'sc-gplwa-d') and .//p[contains(text(), '{train_number}')]]")
+#     time.sleep(2)
+#     train_div.find_element(By.XPATH, ".//div[contains(@class, 'ticket-new')]").click()
+#     time.sleep(5)
 
-    quota_section = driver.find_element(By.XPATH, "//p[text()='Quota']/following-sibling::div")
-    quota_divs = quota_section.find_elements(By.XPATH, "./div")
-    available_quotas = [quota_div.text for quota_div in quota_divs]
+#     quota_section = driver.find_element(By.XPATH, "//p[text()='Quota']/following-sibling::div")
+#     quota_divs = quota_section.find_elements(By.XPATH, "./div")
+#     available_quotas = [quota_div.text for quota_div in quota_divs]
     
-    for quota_div in quota_divs:
-        quota_name = quota_div.text
-        quota_div.click()
-        time.sleep(5)
+#     for quota_div in quota_divs:
+#         quota_name = quota_div.text
+#         quota_div.click()
+#         time.sleep(5)
         
-        details["available_quotas"][quota_name] = {}
+#         details["available_quotas"][quota_name] = {}
         
-        class_section = driver.find_element(By.XPATH, "//p[text()='Class']/following-sibling::div")
-        class_divs = class_section.find_elements(By.XPATH, "./div")
+#         class_section = driver.find_element(By.XPATH, "//p[text()='Class']/following-sibling::div")
+#         class_divs = class_section.find_elements(By.XPATH, "./div")
         
-        for class_div in class_divs:
-            class_name = class_div.text
-            class_div.click()
-            time.sleep(5)
+#         for class_div in class_divs:
+#             class_name = class_div.text
+#             class_div.click()
+#             time.sleep(5)
 
-            day_data = []
-            daylist_divs = driver.find_elements(By.XPATH, "//div[contains(@class, 'day')]")
+#             day_data = []
+#             daylist_divs = driver.find_elements(By.XPATH, "//div[contains(@class, 'day')]")
 
-            for day_div in daylist_divs:
-                date_element = day_div.find_element(By.XPATH, ".//p[contains(@style, 'font-weight: 600')]")
-                date_text = date_element.text
+#             for day_div in daylist_divs:
+#                 date_element = day_div.find_element(By.XPATH, ".//p[contains(@style, 'font-weight: 600')]")
+#                 date_text = date_element.text
                 
-                availability_element = day_div.find_element(By.XPATH, ".//p[contains(@style, 'color: rgb(165, 164, 166)') or contains(@style, 'font-weight: 600')]")
-                availability_text = availability_element.text
+#                 availability_element = day_div.find_element(By.XPATH, ".//p[contains(@style, 'color: rgb(165, 164, 166)') or contains(@style, 'font-weight: 600')]")
+#                 availability_text = availability_element.text
                 
-                availability_element.click()
-                time.sleep(3)
-                price_element = driver.find_element(By.XPATH, "//span[contains(@style, 'font-size: 20px; font-weight: 600; color: rgb(42, 42, 42)')]")
-                price_text = price_element.text
+#                 availability_element.click()
+#                 time.sleep(3)
+#                 price_element = driver.find_element(By.XPATH, "//span[contains(@style, 'font-size: 20px; font-weight: 600; color: rgb(42, 42, 42)')]")
+#                 price_text = price_element.text
 
-                day_data.append({
-                    "date": date_text,
-                    "availability": availability_text,
-                    "price": price_text
-                })
+#                 day_data.append({
+#                     "date": date_text,
+#                     "availability": availability_text,
+#                     "price": price_text
+#                 })
             
-            details["available_quotas"][quota_name][class_name] = day_data
+#             details["available_quotas"][quota_name][class_name] = day_data
     
-    return jsonify(details)
+#     return jsonify(details)
 
 @app.route("/booktrain/", methods=["POST"])
 def book_train_submit():
@@ -560,66 +586,216 @@ def book_train_submit():
 
     passenger_details = data.get('passenger_details')
 
-    train_div = driver.find_element(By.XPATH, f"//div[contains(@class, 'sc-gplwa-d') and .//p[contains(text(), '{train_number}')]]")
+    print("Waiting for page to load...")
+    time.sleep(5)
+
+    print(f"Looking for train {train_number}...")
+    all_p_tags = driver.find_elements(By.XPATH, "//div[contains(@class, 'sc-gplwa-d')]//p")
+    train_div = None
+    
+    for p_tag in all_p_tags:
+        text = driver.execute_script("return arguments[0].textContent;", p_tag).strip()
+        if f'({train_number})' in text:
+            train_div = p_tag
+            break
+    
+    if not train_div:
+        print(f"Train {train_number} not found on the page!")
+        return {"error": "Train not found"}
+    
+    train_card = train_div.find_element(By.XPATH, "./ancestor::div[contains(@class, 'sc-gplwa-d')]")
+    print(f"Found train: {driver.execute_script('return arguments[0].textContent;', train_div).strip()}")
+    
     time.sleep(2)
-    train_div.find_element(By.XPATH, ".//div[contains(@class, 'ticket-new')]").click()
-    time.sleep(5)
+    print("Clicking ticket button...")
+    ticket_buttons = train_card.find_elements(By.XPATH, ".//div[contains(@class, 'ticket-new')]")
+    if ticket_buttons:
+        ticket_buttons[0].click()
+        time.sleep(5)
+    else:
+        return {"error": "No ticket buttons found"}
 
-    quota_div = driver.find_element(By.XPATH, f"//div[.//text()[contains(., '{quota}')]]")
-    quota_div.click()
+    print(f"Selecting quota: {quota}")
+    quota_section = driver.find_element(By.XPATH, "//p[text()='Quota']/following-sibling::div")
+    quota_divs = quota_section.find_elements(By.XPATH, "./div")
+    for q_div in quota_divs:
+        if q_div.text == quota:
+            q_div.click()
+            break
     time.sleep(5)
     
-    class_div = driver.find_element(By.XPATH, f"//div[.//text()[contains(., '{travel_class}')]]")
-    class_div.click()
+    print(f"Selecting class: {travel_class}")
+    class_section = driver.find_element(By.XPATH, "//p[text()='Class']/following-sibling::div")
+    class_divs = class_section.find_elements(By.XPATH, "./div")
+    for c_div in class_divs:
+        if c_div.text == travel_class:
+            c_div.click()
+            break
     time.sleep(5)
     
-    date_div = driver.find_element(By.XPATH, f"//div[.//p[contains(text(), '{journey_date}')]]")
-    date_div.click()
+    print(f"Selecting date: {journey_date}")
+    date_divs = driver.find_elements(By.XPATH, "//*[@id='disha-drawer-1']/div/div[1]/div[2]/div/div[6]/div")
+    for date_div in date_divs:
+        date_text = driver.execute_script("return arguments[0].textContent;", date_div).strip()
+        if journey_date in date_text:
+            date_div.click()
+            break
     time.sleep(3)
 
-    book_button = driver.find_element(By.XPATH, f"//button[contains(text(), 'BOOK TICKET')]")
+    print("Clicking BOOK TICKET button...")
+    book_button = driver.find_element(By.XPATH, "//button[contains(text(), 'BOOK TICKET')]")
     book_button.click()
-    time.sleep(3)
+    time.sleep(50)
 
-    confirm_button = driver.find_element(By.XPATH, f"//button[contains(text(), 'Confirm')]")
+    print("Confirming booking...")
+    confirm_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Confirm')]")
     confirm_button.click()
     time.sleep(15)
 
-    c = 0
-    for passenger in passenger_details:
-        if(c == 1):
+    print("Filling passenger details...")
+    for idx, passenger in enumerate(passenger_details):
+        if idx > 0:
+            print(f"Adding passenger {idx + 1}...")
             driver.find_element(By.XPATH, "//button[contains(text(), 'Add Passenger')]").click()
             time.sleep(3)
-            driver.find_element(By.XPATH, "//button[contains(text(), 'Add Passenger')]").click()
-            time.sleep(3)
+        
         gender = passenger.get('gender')
-        driver.find_element(By.XPATH, f"//div[contains(text(), '{gender}')]").click()
+        print(f"Selecting gender: {gender}")
+        if gender is "Male":
+            driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[2]/div[1]/div/span/div[1]/div[1]/div").click()
+        elif gender is "Female":
+            driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[2]/div[1]/div/span/div[1]/div[2]/div").click()
+
+
+        print(f"Entering name: {passenger.get('name')}")
         driver.find_element(By.ID, "name").send_keys(passenger.get('name'))
+        
+        print(f"Entering age: {passenger.get('age')}")
         driver.find_element(By.ID, "age").send_keys(str(passenger.get('age')))
 
-    try:
-        if(passenger.get('food_preference') == "Non Vegetarian"):
-            driver.find_element(By.XPATH, "//div[contains(text(), 'Non Vegetarian')]").click()
-            time.sleep(3)
-            driver.find_element(By.XPATH, "//div[contains(text(), 'Non Vegetarian')]").click()
-            time.sleep(2)
-    except Exception as e:
-        print(f"Error occurred: {e}")
-        pass
+        print("Clicking Review Journey...")
+        driver.find_element(By.XPATH, "//*[@id='pass-step']/button").click()
+        time.sleep(5)
+
+        driver.find_element(By.XPATH, "//*[@id='drawer-footer']/div/button").click()
+        time.sleep(3)
+
 
     try:
-        if(passenger.get('berth_preference')):
-            driver.find_element(By.XPATH, f"//div[contains(text(), 'berth_preference']").click()
-            time.sleep(3)
-            driver.find_element(By.XPATH, f"//div[contains(text(), '{passenger.get('berth_preference')}')]").click()
+        confirm_buttons = driver.find_elements(By.XPATH, "//*[@id='drawer-footer']/div/button[2]")
+        if confirm_buttons:
+            confirm_buttons[0].click()
             time.sleep(2)
-
     except Exception as e:
-        print(f"Error occurred: {e}")
-        pass
-    driver.find_element(By.XPATH, "//button[contains(text(), 'Review Journey')]").click()
+        print(f"Secondary confirm button not found or already clicked: {e}")
 
+        return jsonify({"message": "Booking process initiated. Please enter OTP field."})
 
+@app.route("/otp-booking", methods=["POST"])
+def enter_otp():
+    data = request.json()
+    otp = data.get('otp')
+
+    otp_field = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[1]/input")
+    otp_field.send_keys(otp)
+    time.sleep(2)
+
+    driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[2]/button[1]").click()
+    time.sleep(10)
+    print("Booking process completed!")
+
+    return jsonify({"message": "OTP Entered, now show the payment page"})
+@app.route("/show-payment-page", methods=["GET"])
+def show_payment_page():
+    try:
+        if not driver:
+            return jsonify({"error": "No active browser session"}), 400
+        
+        driver.maximize_window()
+        driver.set_window_position(0, 0)
+        
+        current_url = driver.current_url
+        
+        return jsonify({
+            "message": "Payment page is now visible",
+            "current_url": current_url,
+            "status": "success"
+        })
+    
+    except Exception as e:
+        print(f"Error showing payment page: {e}")
+        return jsonify({
+            "error": "Failed to show payment page",
+            "details": str(e)
+        }), 500
+
+@app.route("/hide-browser", methods=["GET"])
+def hide_browser():
+    try:
+        if not driver:
+            return jsonify({"error": "No active browser session"}), 400
+        
+        driver.minimize_window()
+        driver.set_window_position(-2400, -2400)
+        
+        return jsonify({
+            "message": "Browser hidden successfully",
+            "status": "success"
+        })
+    
+    except Exception as e:
+        print(f"Error hiding browser: {e}")
+        return jsonify({
+            "error": "Failed to hide browser",
+            "details": str(e)
+        }), 500
+
+@app.route("/signin", methods=["POST"])
+def signin():
+    data = request.json()
+    otp = data.get('otp')
+    number = data.get('number')
+
+    sign_in_button = driver.find_element(By.XPATH, "//*[@id='corover-body']/div[1]/div/div[2]/button/span")
+    sign_in_button.click()
+    
+    print("Filling in mobile number...")
+    mobile_input = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "//*[@id='disha-drawer-1']/div/div[1]/div[2]/div/div/div[2]/input"))
+    )
+    mobile_input.send_keys(number)
+    
+    print("Submitting sign in form...")
+    submit_button = driver.find_element(By.XPATH, "//*[@id='drawer-footer']/span/button")
+    submit_button.click()
+
+    return jsonify({"message": "OTP sent to mobile number. Ask user for OTP."})
+
+@app.route("/ask-otp-signin", methods=["POST"])
+def enter_otp_signin():
+    try:
+        data = request.get_json()
+        otp = data.get('otp')
+
+        otp_field = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[1]/input")
+        otp_field.send_keys(otp)
+        time.sleep(2)
+
+        driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[2]/button[1]").click()
+        time.sleep(10)
+        print("Sign-in process completed!")
+        
+        submit_button = driver.find_element(By.XPATH, "//*[@id='drawer-footer']/span/button")
+        submit_button.click()
+
+        time.sleep(3)
+
+        return jsonify({"message": "User logged in successfully"})
+    
+    except Exception as e:
+        print(f"Error during sign-in OTP: {e}")
+        return jsonify({"error": "Failed to complete sign-in", "details": str(e)}), 500
+    
 @app.route("/chat", methods=["POST"])
 def chat_endpoint():
     """
