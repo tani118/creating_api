@@ -30,6 +30,20 @@ def init_driver():
         options = seleniumwire_webdriver.ChromeOptions()
         options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
         driver = seleniumwire_webdriver.Chrome(options=options)
+    else:
+        # Check if session is still valid
+        try:
+            driver.current_url  # This will raise exception if session is invalid
+        except:
+            # Session is invalid, create new driver
+            try:
+                driver.quit()
+            except:
+                pass
+            driver = None
+            options = seleniumwire_webdriver.ChromeOptions()
+            options.add_argument('user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36')
+            driver = seleniumwire_webdriver.Chrome(options=options)
     return driver
 
 @app.route("/closeBrowser", methods=["GET"])
@@ -78,25 +92,84 @@ def getTrainDetailsWithRefresh():
                 response_body = req.response.body.decode('utf-8')
                 response_json = json.loads(response_body)
                 cached_train_data = response_json
+                
+                # Debug logging - print cache structure
+                print("\n" + "="*80)
+                print("CACHED TRAIN DATA STRUCTURE:")
+                print("="*80)
+                print(f"Total trains cached: {len(response_json.get('trainBtwnStnsList', []))}")
+                
+                # Show first train's structure
+                if response_json.get('trainBtwnStnsList'):
+                    first_train = response_json['trainBtwnStnsList'][0]
+                    print(f"\nFirst train example: {first_train.get('trainNumber')} - {first_train.get('trainName')}")
+                    print(f"Keys in train object: {list(first_train.keys())}")
+                    
+                    if first_train.get('availability'):
+                        print(f"\nAvailability data structure:")
+                        first_avl = first_train['availability'][0]
+                        print(f"Keys in availability: {list(first_avl.keys())}")
+                        print(f"Sample availability: {json.dumps(first_avl, indent=2)}")
+                
+                print("="*80 + "\n")
+                
                 return jsonify(response_json)
     
     return jsonify({"status": 500, "message": "No response captured"}), 500
 
+@app.route("/debug/cache", methods=["GET"])
+def debug_cache():
+    """Debug endpoint to view complete cached data"""
+    if not cached_train_data:
+        return jsonify({"error": "No data cached yet"}), 400
+    
+    return jsonify({
+        "cache_structure": list(cached_train_data.keys()),
+        "total_trains": len(cached_train_data.get('trainBtwnStnsList', [])),
+        "full_data": cached_train_data
+    })
+
 @app.route("/trains/available", methods=["GET"])
 def get_available_trains():
+    """
+    This endpoint filters trains from the CACHE (cached_train_data).
+    It does NOT make new API calls - it reads from memory.
+    """
     if not cached_train_data:
         return jsonify({"error": "No train data available. Call /getTrainDetailsWithRefresh first"}), 400
     
+    print("\n" + "="*80)
+    print("GET /trains/available - Filtering from cache")
+    print("="*80)
+    
     trains = cached_train_data.get('trainBtwnStnsList', [])
+    print(f"Total trains in cache: {len(trains)}")
+    
     available_trains = []
+    trains_with_avl = 0
+    trains_with_available_status = 0
     
     for train in trains:
+        train_num = train.get('trainNumber')
+        availability_list = train.get('availability', [])
+        
+        if availability_list:
+            trains_with_avl += 1
+            
+            # Debug: Show availability status for first train
+            if trains_with_avl == 1:
+                print(f"\nExample - Train {train_num}:")
+                for avl in availability_list[:2]:  # Show first 2 classes
+                    status = avl.get('details', {}).get('avlDayList', {}).get('availablityStatus', 'NO_STATUS')
+                    print(f"  Class {avl.get('className')}: {status}")
+        
         has_availability = any(
             avl.get('details', {}).get('avlDayList', {}).get('availablityStatus', '').startswith('AVAILABLE')
-            for avl in train.get('availability', [])
+            for avl in availability_list
         )
         
         if has_availability:
+            trains_with_available_status += 1
             available_trains.append({
                 'trainNumber': train.get('trainNumber'),
                 'trainName': train.get('trainName'),
@@ -116,6 +189,12 @@ def get_available_trains():
                     if avl.get('details', {}).get('avlDayList', {}).get('availablityStatus', '').startswith('AVAILABLE')
                 ]
             })
+    
+    print(f"\nFiltering results:")
+    print(f"  - Trains with availability data: {trains_with_avl}/{len(trains)}")
+    print(f"  - Trains with AVAILABLE status: {trains_with_available_status}")
+    print(f"  - Trains returned to client: {len(available_trains)}")
+    print("="*80 + "\n")
     
     return jsonify({
         'count': len(available_trains),
@@ -484,7 +563,7 @@ def book_train(train_number):
     return jsonify(details)
 
 @app.route("/booktrain/", methods=["POST"])
-def book_train():
+def book_train_submit():
     data = request.get_json()
     train_number = data.get('train_number')
     quota = data.get('quota')
