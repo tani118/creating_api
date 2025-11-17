@@ -706,9 +706,6 @@ def book_train_submit():
 
     passenger_details = data.get('passenger_details')
 
-    print("Waiting for page to load...")
-    time.sleep(5)
-
     print(f"Looking for train {train_number}...")
     all_p_tags = driver.find_elements(By.XPATH, "//div[contains(@class, 'sc-gplwa-d')]//p")
     train_div = None
@@ -765,49 +762,80 @@ def book_train_submit():
     print("Clicking BOOK TICKET button...")
     book_button = driver.find_element(By.XPATH, "//button[contains(text(), 'BOOK TICKET')]")
     book_button.click()
-    time.sleep(50)
+    time.sleep(5)
 
-    print("Confirming booking...")
-    try :
+    try:
+        print("Confirming booking...")
         confirm_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Confirm')]")
         confirm_button.click()
-        time.sleep(15)
+        time.sleep(5)
+        print("Confirm button clicked successfully")
     except Exception as e:
-        print(f"Confirm button not found or already clicked: {e}")
+        print(f"Confirm button not found or not needed: {e}")
+        time.sleep(5)
         pass
 
     print("Filling passenger details...")
     for idx, passenger in enumerate(passenger_details):
-        if idx > 0:
+        if(idx != 0):
             print(f"Adding passenger {idx + 1}...")
-            driver.find_element(By.XPATH, "//button[contains(text(), 'Add Passenger')]").click()
+            time.sleep(3)
+            add_passenger_button = driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[3]/button")
+            add_passenger_button.click()
             time.sleep(3)
         
         gender = passenger.get('gender')
         print(f"Selecting gender: {gender}")
-        if gender == "Male":
+        if gender == "Male":  # Changed from 'is' to '=='
             driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[2]/div[1]/div/span/div[1]/div[1]/div").click()
-        elif gender == "Female":
+            time.sleep(1)
+        elif gender == "Female":  # Changed from 'is' to '=='
             driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[2]/div[1]/div/span/div[1]/div[2]/div").click()
+            time.sleep(1)
 
+        time.sleep(2)  # Add small delay after gender selection
 
         print(f"Entering name: {passenger.get('name')}")
-        driver.find_element(By.ID, "name").send_keys(passenger.get('name'))
+        name_field = driver.find_element(By.ID, "name")
+        name_field.clear()
+        name_field.send_keys(passenger.get('name'))
+        time.sleep(1)
         
         print(f"Entering age: {passenger.get('age')}")
-        driver.find_element(By.ID, "age").send_keys(str(passenger.get('age')))
+        age_field = driver.find_element(By.ID, "age")
+        age_field.clear()
+        age_field.send_keys(str(passenger.get('age')))
+        time.sleep(1)
 
-        print("Clicking ADD Passenger")
-        book_button = driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[3]/button")
-        book_button.click()
-        time.sleep(50)
+        # if passenger.get('food_preference'):
+        #     try:
+        #         food_pref = passenger.get('food_preference')
+        #         print(f"Selecting food preference: {food_pref}")
+        #         driver.find_element(By.XPATH, f"//div[contains(text(), '{food_pref}')]").click()
+        #         time.sleep(2)
+        #     except Exception as e:
+        #         print(f"Could not set food preference: {e}")
+        #         pass
 
-        print("Clicking Review Journey...")
-        driver.find_element(By.XPATH, "//*[@id='pass-step']/button").click()
-        time.sleep(5)
+        # if passenger.get('berth_preference'):
+        #     try:
+        #         berth_pref = passenger.get('berth_preference')
+        #         print(f"Selecting berth preference: {berth_pref}")
+        #         driver.find_element(By.XPATH, f"//*[@id='passengers']/div/div/div/div[2]/div[4]/div/div").click()
+        #         time.sleep(2)
+        #     except Exception as e:
+        #         print(f"Could not set berth preference: {e}")
+        #         pass
 
-        driver.find_element(By.XPATH, "//*[@id='drawer-footer']/div/button").click()
-        time.sleep(3)
+
+        driver.find_element(By.XPATH, "//button[contains(text(), 'Add Passenger')]").click()
+
+    print("Clicking Review Journey...")
+    driver.find_element(By.XPATH, "//*[@id='pass-step']/button").click()
+    time.sleep(5)
+
+    driver.find_element(By.XPATH, "//*[@id='drawer-footer']/div/button").click()
+    time.sleep(3)
 
 
     try:
@@ -842,10 +870,14 @@ def enter_otp():
         time.sleep(2)
 
         # Click verify button
-        verify_button = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[2]/button[1]")
-        verify_button.click()
-        time.sleep(10)
-        print("Booking process completed!")
+        try:
+            verify_button = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[2]/button[1]")
+            verify_button.click()
+            time.sleep(10)
+            print("Booking process completed!")
+        except Exception as e:
+            print(f"Verify button not found or error clicking: {e}")
+            pass
 
         return jsonify({"message": "OTP Entered, now show the payment page"}), 200
     except Exception as e:
