@@ -878,7 +878,7 @@ def enter_otp_signin():
         time.sleep(2)
 
         # Click verify button
-        verify_button = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[2]/button[1]")
+        verify_button = driver.find_element(By.XPATH, "//*[@id='drawer-footer']/span/button")
         verify_button.click()
         time.sleep(10)
         print("Sign-in process completed!")
