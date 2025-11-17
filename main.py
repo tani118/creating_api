@@ -775,6 +775,20 @@ def book_train_submit():
         time.sleep(5)
         pass
     
+    try:
+        print("Input IRCTC user id if prompted")
+        irctc_id=driver.find_element(By.XPATH, "//*[@id='passengers']/div/div[2]/div[1]/input")
+        irctc_id.send_keys("lakshyabhutani")  # Replace with actual user id
+        time.sleep(1)
+        verify_and_proceed_button = driver.find_element(By.XPATH, "//*[@id='passengers']/div/div[2]/button")
+        verify_and_proceed_button.click()
+        time.sleep(3)
+        print("IRCTC user id submitted")
+    except:
+        print("IRCTC user id prompt not found, continuing...")
+        pass
+
+
     print("Removing existing passengers...")
     while True:
         try:
