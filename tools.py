@@ -58,7 +58,7 @@ def search_trains(query: str) -> str:
                 "JDATE": formatted_date,
                 "JQUOTA": quota
             },
-            timeout=60
+            timeout=360
         )
         
         if response.status_code == 200:
@@ -89,7 +89,7 @@ def get_available_trains(dummy: str = "") -> str:
         JSON string with available trains, their classes, fares, and timings
     """
     try:
-        response = requests.get(f"{BACKEND_URL}/trains/available", timeout=60)
+        response = requests.get(f"{BACKEND_URL}/trains/available", timeout=360)
         
         if response.status_code == 200:
             data = response.json()
@@ -131,7 +131,7 @@ def get_cheapest_trains(train_class: Optional[str] = None) -> str:
         if train_class:
             params['class'] = train_class.upper()
         
-        response = requests.get(f"{BACKEND_URL}/trains/cheapest", params=params, timeout=60)
+        response = requests.get(f"{BACKEND_URL}/trains/cheapest", params=params, timeout=360)
         
         if response.status_code == 200:
             data = response.json()
@@ -167,7 +167,7 @@ def get_fastest_trains(dummy: str = "") -> str:
         JSON string with fastest trains
     """
     try:
-        response = requests.get(f"{BACKEND_URL}/trains/fastest", timeout=60)
+        response = requests.get(f"{BACKEND_URL}/trains/fastest", timeout=360)
         
         if response.status_code == 200:
             data = response.json()
@@ -202,7 +202,7 @@ def get_train_details(train_number: str) -> str:
         JSON string with complete train details including all classes and availability
     """
     try:
-        response = requests.get(f"{BACKEND_URL}/trains/{train_number}", timeout=60)
+        response = requests.get(f"{BACKEND_URL}/trains/{train_number}", timeout=360)
         
         if response.status_code == 200:
             train = response.json()
@@ -265,7 +265,7 @@ def filter_trains(
         if classes:
             filters["classes"] = [c.strip().upper() for c in classes.split(',')]
         
-        response = requests.post(f"{BACKEND_URL}/trains/filter", json=filters, timeout=60)
+        response = requests.post(f"{BACKEND_URL}/trains/filter", json=filters, timeout=360)
         
         if response.status_code == 200:
             data = response.json()
@@ -312,7 +312,7 @@ def get_train_route(train_number: str, journey_date: str, starting_station: str)
         response = requests.get(
             f"{BACKEND_URL}/trains/{train_number}/route",
             params=params,
-            timeout=60
+            timeout=360
         )
         
         if response.status_code == 200:
@@ -346,7 +346,7 @@ def get_trains_summary(dummy: str = "") -> str:
         Summary statistics of the cached train data
     """
     try:
-        response = requests.get(f"{BACKEND_URL}/trains/summary", timeout=60)
+        response = requests.get(f"{BACKEND_URL}/trains/summary", timeout=360)
         
         if response.status_code == 200:
             data = response.json()
@@ -387,7 +387,7 @@ def get_train_booking_options(train_number: str) -> str:
     try:
         response = requests.get(
             f"{BACKEND_URL}/booktrain/{train_number}",
-            timeout=60  # This scrapes live data, may take time
+            timeout=360  # This scrapes live data, may take time
         )
         
         if response.status_code == 200:
@@ -489,7 +489,7 @@ def book_train(booking_data: str) -> str:
         response = requests.post(
             f"{BACKEND_URL}/booktrain/",
             json=params,
-            timeout=60  # Booking may take time
+            timeout=360  # Booking may take time
         )
         
         if response.status_code == 200:
@@ -535,7 +535,7 @@ def get_trains_by_class(class_code: str) -> str:
     try:
         response = requests.get(
             f"{BACKEND_URL}/trains/by-class/{class_code.upper()}",
-            timeout=60
+            timeout=360
         )
         
         if response.status_code == 200:
@@ -575,7 +575,7 @@ def get_trains_by_type(train_type: str) -> str:
     try:
         response = requests.get(
             f"{BACKEND_URL}/trains/by-type/{train_type.upper()}",
-            timeout=60
+            timeout=360
         )
         
         if response.status_code == 200:
@@ -616,7 +616,7 @@ def get_train_booking_options(train_number: str) -> str:
     try:
         response = requests.get(
             f"{BACKEND_URL}/booktrain/{train_number}",
-            timeout=60  # This scrapes live data, may take time
+            timeout=360  # This scrapes live data, may take time
         )
         
         if response.status_code == 200:
@@ -667,7 +667,7 @@ def book_train_submit(booking_data: str) -> str:
         response = requests.post(
             f"{BACKEND_URL}/booktrain/",
             json=params,
-            timeout=60  # Booking may take time
+            timeout=360  # Booking may take time
         )
         
         if response.status_code == 200:
@@ -696,7 +696,7 @@ def submit_booking_otp(otp: str) -> str:
         response = requests.post(
             f"{BACKEND_URL}/otp-booking",
             json={"otp": otp},
-            timeout=60
+            timeout=360
         )
         
         if response.status_code == 200:
@@ -721,7 +721,7 @@ def show_payment_page(dummy: str = "") -> str:
         Status message about browser visibility
     """
     try:
-        response = requests.get(f"{BACKEND_URL}/show-payment-page", timeout=60)
+        response = requests.get(f"{BACKEND_URL}/show-payment-page", timeout=360)
         
         if response.status_code == 200:
             data = response.json()
@@ -745,7 +745,7 @@ def hide_browser(dummy: str = "") -> str:
         Status message
     """
     try:
-        response = requests.get(f"{BACKEND_URL}/hide-browser", timeout=60)
+        response = requests.get(f"{BACKEND_URL}/hide-browser", timeout=360)
         
         if response.status_code == 200:
             return "✅ Browser hidden successfully."
@@ -808,7 +808,7 @@ def submit_signin_otp(otp: str) -> str:
         response = requests.post(
             f"{BACKEND_URL}/ask-otp-signin",
             json={"otp": otp},
-            timeout=60
+            timeout=360
         )
         
         if response.status_code == 200:
@@ -833,7 +833,7 @@ def close_browser(dummy: str = "") -> str:
         Status message
     """
     try:
-        response = requests.get(f"{BACKEND_URL}/closeBrowser", timeout=60)
+        response = requests.get(f"{BACKEND_URL}/closeBrowser", timeout=360)
         
         if response.status_code == 200:
             return "Browser closed successfully."

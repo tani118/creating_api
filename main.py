@@ -939,7 +939,6 @@ def signin():
             "details": str(e)
         }), 500
 
-
 @app.route("/ask-otp-signin", methods=["POST"])
 def enter_otp_signin():
     global driver
@@ -962,23 +961,15 @@ def enter_otp_signin():
         time.sleep(2)
 
         # Click verify button
-        verify_button = driver.find_element(By.XPATH, "//*[@id='drawer-footer']/span/button")
-        verify_button.click()
-        time.sleep(10)
-        print("Sign-in process completed!")
-        
-        # Try to click final submit button (might not exist)
         try:
-            submit_button = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable((By.XPATH, "//*[@id='drawer-footer']/span/button"))
-            )
-            submit_button.click()
-            time.sleep(3)
-            print("Submit button clicked successfully")
+            verify_button = driver.find_element(By.XPATH, "//*[@id='drawer-footer']/span/button")
+            verify_button.click()
+            time.sleep(10)
+            print("Sign-in process completed!")
         except Exception as e:
-            print(f"Submit button not found or not needed: {e}")
-            # This is okay - the sign-in might be complete without this button
-
+            print(f"Verify button not found or error clicking: {e}")
+            # This might be okay if sign-in completes automatically
+        
         return jsonify({"message": "User logged in successfully"}), 200
     
     except Exception as e:
