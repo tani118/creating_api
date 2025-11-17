@@ -1,0 +1,727 @@
+{
+  "Delhi": {
+    "NDLS": "New Delhi Railway Station",
+    "DLI": "Delhi Junction",
+    "DSA": "Delhi Shahdara",
+    "DEE": "Delhi Sarai Rohilla",
+    "NZM": "Hazrat Nizamuddin",
+    "ANVT": "Anand Vihar Terminal",
+    "DKZ": "Delhi Cantt",
+    "TKD": "Tuglakabad",
+    "SWNR": "Sarai Wale Khan Halt",
+    "VVB": "Vivek Vihar"
+  },
+  "Mumbai": {
+    "CSTM": "Mumbai Chhatrapati Shivaji Terminus",
+    "BCT": "Mumbai Central",
+    "BDTS": "Bandra Terminus",
+    "LTT": "Lokmanya Tilak Terminus",
+    "BVI": "Borivali",
+    "DR": "Dadar",
+    "KYN": "Kalyan Junction",
+    "TNA": "Thane",
+    "PNVL": "Panvel",
+    "BY": "Byculla",
+    "CCG": "Churchgate",
+    "BIRD": "Bhiwandi Road",
+    "ABH": "Ambernath",
+    "CSMT": "Chhatrapati Shivaji Maharaj Terminus"
+  },
+  "Kolkata": {
+    "HWH": "Howrah Junction",
+    "SDAH": "Sealdah",
+    "KOAA": "Kolkata",
+    "SHM": "Shalimar",
+    "DKAE": "Dankuni",
+    "BWN": "Barddhaman Junction"
+  },
+  "Chennai": {
+    "MAS": "Chennai Central",
+    "MS": "Chennai Egmore",
+    "MSB": "Chennai Beach",
+    "TBM": "Tambaram",
+    "ABEO": "Pattaravakkam",
+    "PER": "Perambur",
+    "VLK": "Villivakkam"
+  },
+  "Bangalore": {
+    "SBC": "KSR Bengaluru City Railway Station",
+    "YPR": "Yesvantpur Junction",
+    "BNC": "Bangalore Cantt",
+    "YNK": "Yeshwantpur",
+    "CRLM": "Carmelaram",
+    "CSDR": "Channasandra"
+  },
+  "Hyderabad": {
+    "HYB": "Hyderabad Deccan",
+    "SC": "Secunderabad Junction",
+    "KCG": "Kacheguda",
+    "BMT": "Begumpet",
+    "LKPL": "Lakdikapul",
+    "MJF": "Malakpet",
+    "DYE": "Dayanand Nagar"
+  },
+  "Pune": {
+    "PUNE": "Pune Junction",
+    "SVJR": "Shivaji Nagar",
+    "CCH": "Chinchvad",
+    "CSTM": "Pune City"
+  },
+  "Ahmedabad": {
+    "ADI": "Ahmedabad Junction",
+    "SBIB": "Sabarmati Bridge",
+    "SBI": "Sabarmati",
+    "MMCT": "Mumbai Central",
+    "AMOD": "Amod",
+    "ABD": "Ambli Road"
+  },
+  "Jaipur": {
+    "JP": "Jaipur Junction",
+    "GADJ": "Gandhinagar Jaipur",
+    "FL": "Phulera Junction",
+    "BKI": "Bandikui Junction",
+    "MTPC": "Motipura Chauki"
+  },
+  "Lucknow": {
+    "LKO": "Lucknow Charbagh",
+    "LC": "Lucknow City",
+    "ASH": "Aishbagh",
+    "GN": "Gomtinagar"
+  },
+  "Kanpur": {
+    "CNB": "Kanpur Central",
+    "CNBI": "Chandausi Junction",
+    "GOY": "Govindpuri"
+  },
+  "Nagpur": {
+    "NGP": "Nagpur Junction",
+    "AJNI": "Ajni",
+    "ITR": "Itwari",
+    "ANJ": "Anjangaon",
+    "ELP": "Achalpur"
+  },
+  "Indore": {
+    "INDB": "Indore Junction BG",
+    "IFH": "Indore Fort",
+    "RAU": "Rau"
+  },
+  "Patna": {
+    "PNBE": "Patna Junction",
+    "RJPB": "Rajendra Nagar Terminal",
+    "DNR": "Danapur",
+    "PPTA": "Patliputra Junction"
+  },
+  "Bhopal": {
+    "BPL": "Bhopal Junction",
+    "BHS": "Vidisha",
+    "HBD": "Hoshangabad",
+    "BNI": "Budni"
+  },
+  "Ludhiana": {
+    "LDH": "Ludhiana Junction",
+    "DUI": "Dhuri Junction",
+    "SIR": "Sirhind Junction"
+  },
+  "Agra": {
+    "AGC": "Agra Cantt",
+    "AF": "Agra Fort",
+    "ALJN": "Aligarh Junction",
+    "MTJ": "Mathura Junction"
+  },
+  "Vadodara": {
+    "BRC": "Vadodara Junction",
+    "ANND": "Anand Junction",
+    "NDR": "Nandesari",
+    "MYG": "Miyagam Karjan"
+  },
+  "Surat": {
+    "ST": "Surat",
+    "BH": "Bharuch Junction",
+    "KSB": "Kosamba Junction"
+  },
+  "Visakhapatnam": {
+    "VSKP": "Visakhapatnam",
+    "DVD": "Duvvada",
+    "SCM": "Simhachalam"
+  },
+  "Varanasi": {
+    "BSB": "Varanasi Junction",
+    "BCY": "Varanasi City",
+    "MGS": "Mughal Sarai Junction"
+  },
+  "Rajkot": {
+    "RJT": "Rajkot Junction",
+    "WKR": "Wankaner Junction",
+    "JLR": "Jetalsar Junction"
+  },
+  "Coimbatore": {
+    "CBE": "Coimbatore Junction",
+    "CBF": "Coimbatore North",
+    "PTJ": "Podanur Junction",
+    "MDKI": "Madukarai"
+  },
+  "Kochi": {
+    "ERS": "Ernakulam Junction",
+    "ERN": "Ernakulam Town",
+    "AWY": "Aluva",
+    "IJK": "Irinjalakuda",
+    "CKI": "Chalakudi"
+  },
+  "Thiruvananthapuram": {
+    "TVC": "Trivandrum Central",
+    "KCVL": "Kochuveli",
+    "VAK": "Varkala",
+    "DAVM": "Dhanuvachapuram"
+  },
+  "Vijayawada": {
+    "BZA": "Vijayawada Junction",
+    "TEL": "Tenali Junction",
+    "KCC": "Krishna Canal"
+  },
+  "Jodhpur": {
+    "JU": "Jodhpur Junction",
+    "PMY": "Pali Marwar",
+    "LUNI": "Luni Junction"
+  },
+  "Madurai": {
+    "MDU": "Madurai Junction",
+    "DG": "Dindigul Junction",
+    "KQN": "Kodaikanal Road"
+  },
+  "Raipur": {
+    "R": "Raipur Junction",
+    "DURG": "Durg Junction",
+    "BIA": "Bhilai"
+  },
+  "Amritsar": {
+    "ASR": "Amritsar Junction",
+    "JUC": "Jalandhar City",
+    "JRC": "Jalandhar Cantt",
+    "AGTL": "Agartala"
+  },
+  "Guwahati": {
+    "GHY": "Guwahati",
+    "KYQ": "Kamakhya Junction",
+    "DDNI": "Dudhnoi",
+    "DMGN": "Dhamalgaon"
+  },
+  "Chandigarh": {
+    "CDG": "Chandigarh",
+    "UMB": "Ambala Cantt Junction",
+    "RAA": "Barara"
+  },
+  "Nashik": {
+    "NK": "Nashik Road",
+    "DVL": "Devlali",
+    "IGP": "Igatpuri"
+  },
+  "Jabalpur": {
+    "JBP": "Jabalpur Junction",
+    "KTE": "Katni Junction",
+    "STA": "Satna Junction"
+  },
+  "Gwalior": {
+    "GWL": "Gwalior Junction",
+    "MRA": "Morena",
+    "DHO": "Dholpur Junction"
+  },
+  "Ranchi": {
+    "RNC": "Ranchi Junction",
+    "HTE": "Hatia",
+    "MURI": "Muri Junction"
+  },
+  "Jamshedpur": {
+    "TATA": "Tatanagar Junction",
+    "ADTP": "Adityapur",
+    "GMH": "Gamharia"
+  },
+  "Mysore": {
+    "MYS": "Mysore Junction",
+    "CMNR": "Chamarajanagar",
+    "CMJ": "Chamarajapuram"
+  },
+  "Jammu": {
+    "JAT": "Jammu Tawi",
+    "UHP": "Udhampur",
+    "VJPJ": "Vijaypur Jammu"
+  },
+  "Aurangabad": {
+    "AWB": "Aurangabad",
+    "J": "Jalna",
+    "PBN": "Parbhani Junction"
+  },
+  "Solapur": {
+    "SUR": "Solapur",
+    "WADI": "Wadi Junction",
+    "GR": "Gulbarga"
+  },
+  "Tirupati": {
+    "TPTY": "Tirupati",
+    "RU": "Renigunta Junction",
+    "CTO": "Chittoor"
+  },
+  "Gorakhpur": {
+    "GKP": "Gorakhpur Junction",
+    "GKC": "Gorakhpur Cantt",
+    "CC": "Chauri Chaura"
+  },
+  "Bikaner": {
+    "BKN": "Bikaner Junction",
+    "HMO": "Hanumangarh Town",
+    "SGNR": "Sri Ganganagar"
+  },
+  "Udaipur": {
+    "UDZ": "Udaipur City",
+    "MVJ": "Mavli Junction",
+    "RPZ": "Ranapratapnagar"
+  },
+  "Dehradun": {
+    "DDN": "Dehradun",
+    "HW": "Haridwar Junction",
+    "RWL": "Raiwala Junction"
+  },
+  "Asansol": {
+    "ASN": "Asansol Junction",
+    "DGR": "Durgapur",
+    "BURN": "Burnpur"
+  },
+  "Nanded": {
+    "NED": "Nanded",
+    "PAU": "Purna Junction",
+    "KNVT": "Kinwat"
+  },
+  "Ajmer": {
+    "AII": "Ajmer Junction",
+    "KOTA": "Kota Junction",
+    "BHL": "Bhilwara"
+  },
+  "Jhansi": {
+    "JHS": "Jhansi Junction",
+    "LAR": "Lalitpur",
+    "BINA": "Bina Junction"
+  },
+  "Dhanbad": {
+    "DHN": "Dhanbad Junction",
+    "GMO": "Gomoh Junction",
+    "CRP": "Chandrapura"
+  },
+  "Allahabad": {
+    "PRYJ": "Prayagraj Junction",
+    "ALY": "Prayagraj City",
+    "PRRB": "Prayagraj Rambagh"
+  },
+  "Bhagalpur": {
+    "BGP": "Bhagalpur Junction",
+    "JMP": "Jamalpur Junction",
+    "KIUL": "Kiul Junction"
+  },
+  "Rourkela": {
+    "ROU": "Rourkela",
+    "JSG": "Jharsuguda Junction",
+    "BRGA": "Bargarh Road"
+  },
+  "Kolhapur": {
+    "KOP": "Kolhapur",
+    "MRJ": "Miraj Junction",
+    "SLI": "Sangli"
+  },
+  "Agartala": {
+    "AGTL": "Agartala",
+    "KUGT": "Kumarghat",
+    "ABSA": "Ambassa"
+  },
+  "Siliguri": {
+    "SGUJ": "Siliguri Junction",
+    "NJP": "New Jalpaiguri",
+    "APDJ": "Alipurduar Junction"
+  },
+  "Kota": {
+    "KOTA": "Kota Junction",
+    "BAZ": "Baran",
+    "GUNA": "Guna Junction"
+  },
+  "Bhubaneswar": {
+    "BBS": "Bhubaneswar",
+    "CTC": "Cuttack",
+    "DNKL": "Dhenkanal"
+  },
+  "Haridwar": {
+    "HW": "Haridwar Junction",
+    "RWL": "Raiwala Junction",
+    "LRJ": "Laksar Junction"
+  },
+  "Raigarh": {
+    "RIG": "Raigarh",
+    "JSG": "Jharsuguda Junction",
+    "BRJN": "Brajrajnagar"
+  },
+  "Gaya": {
+    "GAYA": "Gaya Junction",
+    "DOS": "Dehri On Sone",
+    "AUBR": "Anugraha Narayan Road"
+  },
+  "Hapur": {
+    "HPU": "Hapur",
+    "GZB": "Ghaziabad",
+    "NOLI": "Noli"
+  },
+  "Muzaffarpur": {
+    "MFP": "Muzaffarpur Junction",
+    "DBG": "Darbhanga Junction",
+    "SPJ": "Samastipur Junction"
+  },
+  "Bilaspur": {
+    "BSP": "Bilaspur Junction",
+    "CPH": "Champa",
+    "RIG": "Raigarh"
+  },
+  "Kurnool": {
+    "KRNT": "Kurnool Town",
+    "DHNE": "Dhone Junction",
+    "AD": "Adoni"
+  },
+  "Ujjain": {
+    "UJN": "Ujjain Junction",
+    "DWX": "Dewas Junction",
+    "MKC": "Maksi Junction"
+  },
+  "Guntur": {
+    "GNT": "Guntur Junction",
+    "TEL": "Tenali Junction",
+    "BPP": "Bapatla"
+  },
+  "Baraut": {
+    "BTU": "Baraut",
+    "SUJR": "Sujra",
+    "NOLI": "Noli"
+  },
+  "Belgaum": {
+    "BGM": "Belgaum",
+    "LD": "Londa Junction",
+    "GPB": "Ghatprabha"
+  },
+  "Puri": {
+    "PURI": "Puri",
+    "KUR": "Khurda Road Junction",
+    "BBSR": "Bhubaneswar"
+  },
+  "Rampur": {
+    "RMU": "Rampur Junction",
+    "MB": "Moradabad Junction",
+    "BE": "Bareilly Junction"
+  },
+  "Shimoga": {
+    "SMET": "Shimoga Town",
+    "BNV": "Bijnor",
+    "BPQ": "Balharshah"
+  },
+  "Aligarh": {
+    "ALJN": "Aligarh Junction",
+    "HTHC": "Hathras City",
+    "KSJ": "Kasganj Junction"
+  },
+  "Jalandhar": {
+    "JUC": "Jalandhar City",
+    "JRC": "Jalandhar Cantt",
+    "PGW": "Phagwara Junction"
+  },
+  "Moradabad": {
+    "MB": "Moradabad Junction",
+    "BE": "Bareilly Junction",
+    "RMU": "Rampur Junction"
+  },
+  "Warangal": {
+    "WL": "Warangal",
+    "KZJ": "Kazipet Junction",
+    "JMKT": "Jamikunta"
+  },
+  "Salem": {
+    "SA": "Salem Junction",
+    "SAMT": "Salem Market",
+    "RASP": "Rasipuram"
+  },
+  "Mau": {
+    "MAU": "Mau Junction",
+    "AMH": "Azamgarh",
+    "MAI": "Mehsi"
+  },
+  "Tirunelveli": {
+    "TEN": "Tirunelveli Junction",
+    "MEJ": "Vanchi Maniyachchi Junction",
+    "NTL": "Nagercoil Junction"
+  },
+  "Gurgaon": {
+    "GGN": "Gurgaon",
+    "RE": "Rewari Junction",
+    "AWR": "Alwar Junction"
+  },
+  "Jalgaon": {
+    "JL": "Jalgaon Junction",
+    "PC": "Pachora Junction",
+    "CSN": "Chalisgaon Junction"
+  },
+  "Bhilai": {
+    "BQR": "Bhilainagar",
+    "DURG": "Durg Junction",
+    "R": "Raipur Junction"
+  },
+  "Saharanpur": {
+    "SRE": "Saharanpur",
+    "RK": "Roorkee",
+    "MB": "Muzaffarnagar"
+  },
+  "Panipat": {
+    "PNP": "Panipat Junction",
+    "KUN": "Karnal",
+    "KKDE": "Kurukshetra Junction"
+  },
+  "Latur": {
+    "LUR": "Latur Road Junction",
+    "LTRR": "Latur",
+    "UMD": "Usmanabad"
+  },
+  "Rohtak": {
+    "ROK": "Rohtak Junction",
+    "ABO": "Asthal Bohar Junction",
+    "HSR": "Hisar Junction"
+  },
+  "Korba": {
+    "KRBA": "Korba",
+    "CPH": "Champa",
+    "BSP": "Bilaspur Junction"
+  },
+  "Mangalore": {
+    "MAJN": "Mangalore Junction",
+    "SL": "Surathkal",
+    "KUDA": "Kudal"
+  },
+  "Nellore": {
+    "NLR": "Nellore",
+    "OGL": "Ongole",
+    "GDR": "Gudur Junction"
+  },
+  "Sangli": {
+    "SLI": "Sangli",
+    "MRJ": "Miraj Junction",
+    "KOP": "Kolhapur"
+  },
+  "Rajahmundry": {
+    "RJY": "Rajahmundry",
+    "SLO": "Samalkot Junction",
+    "DWP": "Dwarapudi"
+  },
+  "Borivali": {
+    "BVI": "Borivali",
+    "VRAR": "Virar",
+    "BSR": "Vasai Road"
+  },
+  "Kumbakonam": {
+    "KMU": "Kumbakonam",
+    "ADT": "Aduthurai",
+    "MV": "Mayiladuthurai Junction"
+  },
+  "Pilibhit": {
+    "PBE": "Pilibhit Junction",
+    "IJ": "Itaunja",
+    "MNGT": "Mannargudi"
+  },
+  "Shahjahanpur": {
+    "SPN": "Shahjahanpur",
+    "BE": "Bareilly Junction",
+    "HRI": "Hardoi"
+  },
+  "Ichalkaranji": {
+    "RKD": "Ichalkaranji",
+    "SLI": "Sangli",
+    "MRJ": "Miraj Junction"
+  },
+  "Patiala": {
+    "PTA": "Patiala",
+    "MOGA": "Moga",
+    "LDH": "Ludhiana Junction"
+  },
+  "Raigad": {
+    "PNVL": "Panvel",
+    "ROHA": "Roha",
+    "KYN": "Kalyan Junction"
+  },
+  "Meerut": {
+    "MTC": "Meerut City",
+    "MEE": "Meerut Cantt",
+    "GZB": "Ghaziabad"
+  },
+  "Rajapalaiyam": {
+    "RPM": "Rajapalayam",
+    "SVKS": "Sivakasi",
+    "VPT": "Virudhunagar Junction"
+  },
+  "Pali": {
+    "PMY": "Pali Marwar",
+    "MJ": "Marwar Junction",
+    "FA": "Falna"
+  },
+  "Tirupur": {
+    "TUP": "Tiruppur",
+    "VNJ": "Tiruppur Vanjipalayam",
+    "KUY": "Tiruppur Kulipalayam"
+  },
+  "Puducherry": {
+    "PDY": "Puducherry",
+    "VM": "Villupuram Junction",
+    "CUD": "Cuddalore Port Junction"
+  },
+  "Farrukhabad": {
+    "FBD": "Farrukhabad",
+    "KNJ": "Kannauj",
+    "CNB": "Kanpur Central"
+  },
+  "Khammam": {
+    "KMT": "Khammam",
+    "DKJ": "Dornakal Junction",
+    "WL": "Warangal"
+  },
+  "Amravati": {
+    "AMI": "Amravati",
+    "BD": "Badnera Junction",
+    "ELP": "Achalpur"
+  },
+  "Raichur": {
+    "RC": "Raichur Junction",
+    "MALM": "Mantralayam Road",
+    "AD": "Adoni"
+  },
+  "Sitapur": {
+    "STP": "Sitapur",
+    "LKO": "Lucknow Charbagh",
+    "HRI": "Hardoi"
+  },
+  "Sonipat": {
+    "SNP": "Sonipat Junction",
+    "PNP": "Panipat Junction",
+    "GZB": "Ghaziabad"
+  },
+  "Vellore": {
+    "VLR": "Vellore Cantt",
+    "KPD": "Katpadi Junction",
+    "AB": "Ambur"
+  },
+  "Karaikudi": {
+    "KKDI": "Karaikkudi Junction",
+    "DKO": "Devakottai Road",
+    "PDKT": "Pudukkottai"
+  },
+  "Bulandshahr": {
+    "BSC": "Bulandshahr",
+    "GZB": "Ghaziabad",
+    "HPU": "Hapur"
+  },
+  "Erode": {
+    "ED": "Erode Junction",
+    "TUP": "Tiruppur",
+    "SA": "Salem Junction"
+  },
+  "Anantapur": {
+    "ATP": "Anantapur",
+    "GY": "Gooty Junction",
+    "DMM": "Dharmavaram Junction"
+  },
+  "Etawah": {
+    "ETW": "Etawah Junction",
+    "ORAI": "Orai",
+    "JHS": "Jhansi Junction"
+  },
+  "Phusro": {
+    "PHR": "Phusro",
+    "DHN": "Dhanbad Junction",
+    "GMO": "Gomoh Junction"
+  },
+  "Aizawl": {
+    "BAIRABI": "Bairabi",
+    "SCL": "Silchar"
+  },
+  "Munger": {
+    "MKA": "Mokama Junction",
+    "HTZ": "Hathidah Junction",
+    "JAJ": "Jamalpur Junction"
+  },
+  "Thanjavur": {
+    "TJ": "Thanjavur Junction",
+    "KMU": "Kumbakonam",
+    "TPJ": "Tiruchirapalli Junction"
+  },
+  "Ratnagiri": {
+    "RN": "Ratnagiri",
+    "CHI": "Chiplun",
+    "SGR": "Sangameshwar Road"
+  },
+  "Tiruchirappalli": {
+    "TPJ": "Tiruchirapalli Junction",
+    "TJ": "Thanjavur Junction",
+    "TPTN": "Tiruchirapalli Town"
+  },
+  "Bhusawal": {
+    "BSL": "Bhusawal Junction",
+    "JL": "Jalgaon Junction",
+    "PC": "Pachora Junction"
+  },
+  "Darbhanga": {
+    "DBG": "Darbhanga Junction",
+    "JYG": "Jaynagar",
+    "MFP": "Muzaffarpur Junction"
+  },
+  "Begusarai": {
+    "BGS": "Begusarai",
+    "KIUL": "Kiul Junction",
+    "BJU": "Barauni Junction"
+  },
+  "Chittoor": {
+    "CTO": "Chittoor",
+    "TPTY": "Tirupati",
+    "RU": "Renigunta Junction"
+  },
+  "Dibrugarh": {
+    "DBRG": "Dibrugarh",
+    "NTSK": "New Tinsukia Junction",
+    "DBY": "Digboi"
+  },
+  "Brahmapur": {
+    "BAM": "Brahmapur",
+    "CAP": "Chatrapur",
+    "PURI": "Puri"
+  },
+  "Akola": {
+    "AK": "Akola Junction",
+    "MZR": "Murtajapur Junction",
+    "BD": "Badnera Junction"
+  },
+  "Kamarhati": {
+    "KKAE": "Kamarhati",
+    "SDAH": "Sealdah",
+    "BT": "Barrackpore"
+  },
+  "Tumkur": {
+    "TTR": "Tiptur",
+    "ASK": "Arsikere Junction",
+    "YNK": "Yeshwantpur"
+  },
+  "Tiruppur": {
+    "TUP": "Tiruppur",
+    "ED": "Erode Junction",
+    "CBE": "Coimbatore Junction"
+  },
+  "Satna": {
+    "STA": "Satna Junction",
+    "KTE": "Katni Junction",
+    "REWA": "Rewa"
+  },
+  "Mathura": {
+    "MTJ": "Mathura Junction",
+    "AH": "Achhnera Junction",
+    "AF": "Agra Fort"
+  },
+  "Kirari": {
+    "KRJ": "Khurja Junction",
+    "HPU": "Hapur",
+    "GZB": "Ghaziabad"
+  }
+}
