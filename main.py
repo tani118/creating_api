@@ -774,13 +774,36 @@ def book_train_submit():
         print(f"Confirm button not found or not needed: {e}")
         time.sleep(5)
         pass
+    
+    print("Removing existing passengers...")
+    while True:
+        try:
+            # Check if passenger div still exists
+            passenger_divs = driver.find_elements(By.XPATH, "//*[@id='passengers']/div/div/div/div[2]/div[1]")
+            
+            if not passenger_divs:
+                print("No more passengers to remove")
+                break
+            
+            # Find and click delete button
+            delete_button = driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[2]/div[1]/div[1]/img[2]")
+            delete_button.click()
+            print(f"Deleted passenger. Remaining: {len(passenger_divs) - 1}")
+            time.sleep(2)  # Wait for deletion animation/DOM update
+            
+        except Exception as e:
+            print(f"No more delete buttons found or error: {e}")
+            break
+
+    print("All existing passengers removed. Now adding new passengers...")
+    time.sleep(2)
 
     print("Filling passenger details...")
     for idx, passenger in enumerate(passenger_details):
         if(idx != 0):
             print(f"Adding passenger {idx + 1}...")
             time.sleep(3)
-            add_passenger_button = driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[3]/button")
+            add_passenger_button = driver.find_element(By.XPATH, "//button[contains(text(), 'Add Passenger')]")
             add_passenger_button.click()
             time.sleep(3)
         
@@ -845,8 +868,10 @@ def book_train_submit():
             time.sleep(2)
     except Exception as e:
         print(f"Secondary confirm button not found or already clicked: {e}")
+        pass
 
-        return jsonify({"message": "Booking process initiated. Please enter OTP field."})
+    return jsonify({"message": "Booking process initiated. Please enter OTP field."})
+
 
 @app.route("/otp-booking", methods=["POST"])
 def enter_otp():

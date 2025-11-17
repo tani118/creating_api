@@ -671,7 +671,7 @@ def book_train_submit(booking_data: str) -> str:
         )
         
         if response.status_code == 200:
-            return "✅ Booking submitted successfully! Please check IRCTC for confirmation."
+            return "✅ Booking initiated successfully! An OTP has been sent to the registered mobile number. Please ask the user to provide the OTP to complete the booking."
         else:
             return f"❌ Booking failed with status {response.status_code}: {response.text}"
     except json.JSONDecodeError as e:

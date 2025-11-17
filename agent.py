@@ -145,8 +145,10 @@ Thought: I now know the final answer
 Final Answer: the final answer to the original input question
 
 IMPORTANT: 
-- If you need information from the user, use "Final Answer" to ask them directly
+- If you need information from the user (like passenger details, phone number, etc.), DO NOT use Action: None
+- Instead, use "Final Answer" to ask them directly - this is how you communicate with users
 - For search_trains Action Input, provide a JSON string like: {{"source": "NDLS", "destination": "BCT", "date": "25-11-2025", "quota": "GN"}}
+- NEVER write "Action: None" - if you want to talk to the user, go directly to "Final Answer"
 
 Begin!
 
