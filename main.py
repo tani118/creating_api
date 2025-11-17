@@ -871,7 +871,7 @@ def enter_otp_signin():
 
         # Find and fill OTP field
         otp_field = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[1]/input"))
+            EC.presence_of_element_located((By.XPATH, "//*[@id='disha-drawer-1']/div/div[1]/div[2]/div/div/div[2]/input"))
         )
         otp_field.clear()
         otp_field.send_keys(otp)
