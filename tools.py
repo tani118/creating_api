@@ -55,7 +55,7 @@ def search_trains(query: str) -> str:
             json={
                 "SRC": source,
                 "DST": destination,
-                "JDATE": date,
+                "JDATE": formatted_date,
                 "JQUOTA": quota
             },
             timeout=30
@@ -113,8 +113,6 @@ def get_available_trains(dummy: str = "") -> str:
             return "Error: No train data available. Please search trains first using search_trains."
     except Exception as e:
         return f"Error getting available trains: {str(e)}"
-
-@tool
 
 
 @tool
@@ -680,6 +678,136 @@ def book_train_submit(booking_data: str) -> str:
         return f"Error parsing booking data: {str(e)}"
     except Exception as e:
         return f"Error submitting booking: {str(e)}"
+
+
+@tool
+def submit_booking_otp(otp: str) -> str:
+    """
+    Submit OTP for booking confirmation.
+    Use this after booking is initiated and user provides the OTP they received.
+    
+    Args:
+        otp: The OTP code received by user (usually 6 digits)
+    
+    Returns:
+        Status message about OTP submission
+    """
+    try:
+        response = requests.post(
+            f"{BACKEND_URL}/otp-booking",
+            json={"otp": otp},
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            return "✅ OTP submitted successfully! Payment page should be visible now."
+        else:
+            return f"❌ Error submitting OTP: {response.status_code}"
+    except Exception as e:
+        return f"❌ Error calling OTP API: {str(e)}"
+
+
+@tool
+def show_payment_page(dummy: str = "") -> str:
+    """
+    Make the browser window visible to user for payment.
+    Use this after OTP is submitted so user can complete payment on IRCTC.
+    The browser will maximize and move to screen.
+    
+    Args:
+        dummy: Not used, just for compatibility (can pass empty string or any value)
+    
+    Returns:
+        Status message about browser visibility
+    """
+    try:
+        response = requests.get(f"{BACKEND_URL}/show-payment-page", timeout=10)
+        
+        if response.status_code == 200:
+            data = response.json()
+            return f"✅ Payment page is now visible! Current URL: {data.get('current_url', 'N/A')}\n\nPlease complete the payment process on the browser window."
+        else:
+            return f"❌ Error showing payment page: {response.status_code}"
+    except Exception as e:
+        return f"❌ Error calling show payment API: {str(e)}"
+
+
+@tool
+def hide_browser(dummy: str = "") -> str:
+    """
+    Hide the browser window from view.
+    Use this if user wants to minimize the browser during background operations.
+    
+    Args:
+        dummy: Not used, just for compatibility (can pass empty string or any value)
+    
+    Returns:
+        Status message
+    """
+    try:
+        response = requests.get(f"{BACKEND_URL}/hide-browser", timeout=10)
+        
+        if response.status_code == 200:
+            return "✅ Browser hidden successfully."
+        else:
+            return f"❌ Error hiding browser: {response.status_code}"
+    except Exception as e:
+        return f"❌ Error calling hide browser API: {str(e)}"
+
+
+@tool
+def signin_user(mobile_number: str) -> str:
+    """
+    Sign in user to IRCTC account using mobile number.
+    This will send an OTP to the user's mobile number.
+    Use this before booking if user wants to book with their IRCTC account.
+    
+    Args:
+        mobile_number: User's 10-digit mobile number registered with IRCTC
+    
+    Returns:
+        Status message indicating OTP has been sent
+    """
+    try:
+        response = requests.post(
+            f"{BACKEND_URL}/signin",
+            json={"number": mobile_number},
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            return f"✅ OTP sent to {mobile_number}. Please ask user for the OTP to complete sign-in."
+        else:
+            return f"❌ Error signing in: {response.status_code}"
+    except Exception as e:
+        return f"❌ Error calling signin API: {str(e)}"
+
+
+@tool
+def submit_signin_otp(otp: str) -> str:
+    """
+    Submit OTP for IRCTC sign-in verification.
+    Use this after signin_user when user provides the OTP they received.
+    
+    Args:
+        otp: The OTP code received by user (usually 6 digits)
+    
+    Returns:
+        Status message about sign-in completion
+    """
+    try:
+        response = requests.post(
+            f"{BACKEND_URL}/ask-otp-signin",
+            json={"otp": otp},
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            return "✅ Successfully signed in to IRCTC account!"
+        else:
+            return f"❌ Error submitting sign-in OTP: {response.status_code}"
+    except Exception as e:
+        return f"❌ Error calling signin OTP API: {str(e)}"
 
 
 @tool

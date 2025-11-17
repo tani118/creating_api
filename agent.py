@@ -24,8 +24,12 @@ from tools import (
     get_trains_summary,
     get_trains_by_class,
     get_trains_by_type,
-    get_train_booking_options,
     book_train_submit,
+    submit_booking_otp,
+    show_payment_page,
+    hide_browser,
+    signin_user,
+    submit_signin_otp,
     close_browser
 )
 
