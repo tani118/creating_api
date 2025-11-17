@@ -81,6 +81,36 @@ def closeBrowser():
         return jsonify({"message": "Browser closed successfully"}), 200
     return jsonify({"message": "Browser was not running"}), 200
 
+@app.route("/init-browser", methods=["GET"])
+def initialize_browser():
+    global driver
+    try:
+        if driver:
+            return jsonify({
+                "message": "Browser already running",
+                "status": "already_initialized"
+            })
+        
+        print("Initializing browser...")
+        driver = init_driver()
+        driver.get("https://askdisha.irctc.co.in/")
+        time.sleep(5)
+        
+        return jsonify({
+            "message": "Browser initialized successfully",
+            "status": "success",
+            "url": driver.current_url
+        })
+    
+    except Exception as e:
+        print(f"Error initializing browser: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "error": "Failed to initialize browser",
+            "details": str(e)
+        }), 500
+    
 @app.route("/getTrainDetailsWithRefresh", methods=["POST"])
 def getTrainDetailsWithRefresh():
     global driver, cached_train_data
@@ -693,7 +723,7 @@ def book_train_submit():
 
 @app.route("/otp-booking", methods=["POST"])
 def enter_otp():
-    data = request.json()
+    data = request.json
     otp = data.get('otp')
 
     otp_field = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[1]/input")
@@ -749,27 +779,65 @@ def hide_browser():
             "error": "Failed to hide browser",
             "details": str(e)
         }), 500
-
+    
 @app.route("/signin", methods=["POST"])
 def signin():
-    data = request.json()
-    otp = data.get('otp')
-    number = data.get('number')
-
-    sign_in_button = driver.find_element(By.XPATH, "//*[@id='corover-body']/div[1]/div/div[2]/button/span")
-    sign_in_button.click()
+    global driver
+    try:
+        data = request.get_json()
+        phone_number = data.get('phone_number')
+        
+        if not phone_number:
+            return jsonify({"error": "Phone number is required"}), 400
+        
+        print(f"Attempting to sign in with phone: {phone_number}")
+        
+        # Initialize driver if not already running
+        if not driver:
+            print("Initializing browser for sign-in...")
+            driver = init_driver()
+            driver.get("https://askdisha.irctc.co.in/")
+            time.sleep(5)
+        
+        # Wait for page to load
+        time.sleep(2)
+        
+        # Click sign-in button
+        try:
+            signin_button = driver.find_element(By.XPATH, "//*[@id='corover-body']/div[1]/div/div[2]/button")
+            signin_button.click()
+            time.sleep(3)
+        except Exception as e:
+            print(f"Error clicking sign-in button: {e}")
+            # Try alternate sign-in button location
+            signin_button = driver.find_element(By.XPATH, "//*[@id='corover-body']//button[contains(text(), 'Sign In') or contains(text(), 'Login')]")
+            signin_button.click()
+            time.sleep(3)
+        
+        # Enter phone number
+        phone_input = driver.find_element(By.XPATH, "//*[@id='mobile']")
+        phone_input.send_keys(phone_number)
+        time.sleep(2)
+        
+        # Click request OTP button
+        request_otp_button = driver.find_element(By.XPATH, "//*[@id='disha-drawer-1']/div/div[1]/div[2]/div/div/div[2]/button")
+        request_otp_button.click()
+        time.sleep(3)
+        
+        return jsonify({
+            "message": "OTP sent successfully",
+            "phone_number": phone_number,
+            "status": "success"
+        })
     
-    print("Filling in mobile number...")
-    mobile_input = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located((By.XPATH, "//*[@id='disha-drawer-1']/div/div[1]/div[2]/div/div/div[2]/input"))
-    )
-    mobile_input.send_keys(number)
-    
-    print("Submitting sign in form...")
-    submit_button = driver.find_element(By.XPATH, "//*[@id='drawer-footer']/span/button")
-    submit_button.click()
-
-    return jsonify({"message": "OTP sent to mobile number. Ask user for OTP."})
+    except Exception as e:
+        print(f"Error during sign-in: {e}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({
+            "error": "Failed to sign in",
+            "details": str(e)
+        }), 500
 
 @app.route("/ask-otp-signin", methods=["POST"])
 def enter_otp_signin():

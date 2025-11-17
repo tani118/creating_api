@@ -41,21 +41,21 @@ load_dotenv()
 # Initialize LLM - Choose one option below:
 
 # Option 1: Google Gemini (Recommended - Fast, Smart, Free tier available)
-llm = ChatGoogleGenerativeAI(
-    model="gemini-2.5-flash",  # Stable model with 15 RPM limit. Other options: "gemini-1.5-pro"
-    temperature=0.1,
-    google_api_key=os.getenv("GOOGLE_API_KEY"),
-    max_output_tokens=2048
-    # convert_system_message_to_human is deprecated and no longer needed
-)
+# llm = ChatGoogleGenerativeAI(
+#     model="gemini-2.5-flash",  # Stable model with 15 RPM limit. Other options: "gemini-1.5-pro"
+#     temperature=0.1,
+#     google_api_key=os.getenv("GOOGLE_API_KEY"),
+#     max_output_tokens=2048
+#     # convert_system_message_to_human is deprecated and no longer needed
+# )
 
 # Option 2: Groq (Cloud-based, requires API key)
-# llm = ChatGroq(
-#     model="llama-3.3-70b-versatile",
-#     temperature=0.1,
-#     groq_api_key=os.getenv("GROQ_API_KEY"),
-#     max_tokens=2048
-# )
+llm = ChatGroq(
+    model="llama-3.3-70b-versatile",
+    temperature=0.1,
+    groq_api_key=os.getenv("GROQ_API_KEY"),
+    max_tokens=2048
+)
 
 # Define all available tools
 tools = [
@@ -73,6 +73,11 @@ tools = [
     get_trains_by_type,
     get_train_booking_options,
     book_train_submit,
+    signin_user,
+    submit_booking_otp,
+    submit_signin_otp,
+    show_payment_page,
+    hide_browser,
     close_browser
 ]
 
@@ -119,6 +124,7 @@ CONVERSATION FLOW:
 Always use the provided tools to fetch real-time data. Never make up train numbers or availability.
 
 CRITICAL INSTRUCTIONS:
+- Whenever chat begins ask the user to provide his/her phone number and sign them in using signin_user tool.
 - Always use proper station codes (NDLS, BCT, SBC, etc.)
 - Date format must be DD-MM-YYYY
 - If user doesn't provide source/destination/date, respond with Final Answer asking for the missing information
