@@ -1,0 +1,270 @@
+@startuml Train Booking System - Use Case Diagram
+
+title Train Booking System - User Interactions and System Functionality
+
+' Actors
+:User: as User
+:IRCTC System: as IRCTC
+:LLM Service\n(Groq/Gemini): as LLM
+
+' System boundary
+rectangle "Train Booking Chatbot System" {
+    
+    ' Authentication Use Cases
+    package "Authentication" #LightBlue {
+        usecase "Sign In with\nPhone Number" as UC1
+        usecase "Verify OTP" as UC2
+        usecase "Manage User\nSession" as UC3
+    }
+    
+    ' Train Search Use Cases
+    package "Train Search & Discovery" #LightGreen {
+        usecase "Search Trains" as UC4
+        usecase "Get City Stations" as UC5
+        usecase "View Available\nTrains" as UC6
+        usecase "Get Train Details" as UC7
+        usecase "View Train Route" as UC8
+        usecase "Get Train Summary" as UC9
+    }
+    
+    ' Train Filtering Use Cases
+    package "Train Filtering & Sorting" #LightYellow {
+        usecase "Filter by Class" as UC10
+        usecase "Filter by Type" as UC11
+        usecase "Get Cheapest\nTrains" as UC12
+        usecase "Get Fastest\nTrains" as UC13
+        usecase "Filter by\nDeparture Time" as UC14
+        usecase "Filter by\nAvailability" as UC15
+    }
+    
+    ' Booking Use Cases
+    package "Booking Management" #LightCoral {
+        usecase "Book Train Ticket" as UC16
+        usecase "Provide Passenger\nDetails" as UC17
+        usecase "Select Class\nand Quota" as UC18
+        usecase "Get Booking\nOptions" as UC19
+        usecase "Submit Booking\nForm" as UC20
+        usecase "Verify Booking OTP" as UC21
+    }
+    
+    ' Payment Use Cases
+    package "Payment Processing" #LightPink {
+        usecase "View Payment\nPage" as UC22
+        usecase "Complete Payment" as UC23
+        usecase "Receive Booking\nConfirmation" as UC24
+    }
+    
+    ' Conversation Use Cases
+    package "Conversation Management" #Lavender {
+        usecase "Send Message" as UC25
+        usecase "Receive AI\nResponse" as UC26
+        usecase "Use Voice Input" as UC27
+        usecase "Clear Chat\nHistory" as UC28
+        usecase "Maintain\nConversation Context" as UC29
+    }
+    
+    ' Browser Control Use Cases
+    package "Browser Management" #LightCyan {
+        usecase "Initialize Browser" as UC30
+        usecase "Show Browser\nWindow" as UC31
+        usecase "Hide Browser\nWindow" as UC32
+        usecase "Reset Browser\nState" as UC33
+        usecase "Close Browser" as UC34
+    }
+    
+    ' System Functions (Internal)
+    package "Internal System Functions" #WhiteSmoke {
+        usecase "Process Natural\nLanguage" as UC35
+        usecase "Orchestrate\nTool Calls" as UC36
+        usecase "Cache Train Data" as UC37
+        usecase "Capture API\nRequests" as UC38
+        usecase "Automate IRCTC\nInteractions" as UC39
+        usecase "Generate Session ID" as UC40
+        usecase "Store Chat History" as UC41
+    }
+}
+
+' User interactions
+User --> UC1 : initiates
+User --> UC2 : provides
+User --> UC4 : requests
+User --> UC5 : queries
+User --> UC6 : views
+User --> UC7 : requests
+User --> UC8 : views
+User --> UC9 : requests
+User --> UC10 : applies
+User --> UC11 : applies
+User --> UC12 : requests
+User --> UC13 : requests
+User --> UC14 : applies
+User --> UC15 : applies
+User --> UC16 : initiates
+User --> UC17 : provides
+User --> UC18 : selects
+User --> UC19 : requests
+User --> UC20 : confirms
+User --> UC21 : provides
+User --> UC22 : requests
+User --> UC23 : completes
+User --> UC25 : sends
+User --> UC26 : receives
+User --> UC27 : uses
+User --> UC28 : triggers
+User --> UC31 : requests
+User --> UC32 : requests
+User --> UC33 : requests
+User --> UC34 : requests
+
+' IRCTC interactions
+IRCTC --> UC1 : sends OTP
+IRCTC --> UC2 : verifies
+IRCTC <-- UC4 : provides train data
+IRCTC <-- UC7 : provides details
+IRCTC <-- UC8 : provides route
+IRCTC <-- UC16 : processes booking
+IRCTC --> UC21 : sends booking OTP
+IRCTC <-- UC23 : processes payment
+IRCTC --> UC24 : generates PNR
+
+' LLM Service interactions
+LLM <-- UC35 : processes input
+LLM --> UC36 : determines actions
+LLM <-- UC26 : generates response
+LLM <-- UC29 : uses context
+
+' Use case relationships - includes
+UC1 .> UC30 : <<include>>
+UC1 .> UC40 : <<include>>
+UC2 .> UC3 : <<include>>
+UC4 .> UC38 : <<include>>
+UC4 .> UC37 : <<include>>
+UC4 .> UC39 : <<include>>
+UC6 .> UC37 : <<include>>
+UC7 .> UC37 : <<include>>
+UC10 .> UC37 : <<include>>
+UC11 .> UC37 : <<include>>
+UC12 .> UC37 : <<include>>
+UC13 .> UC37 : <<include>>
+UC16 .> UC39 : <<include>>
+UC20 .> UC39 : <<include>>
+UC21 .> UC39 : <<include>>
+UC25 .> UC35 : <<include>>
+UC25 .> UC36 : <<include>>
+UC26 .> UC41 : <<include>>
+UC28 .> UC41 : <<include>>
+UC29 .> UC41 : <<include>>
+
+' Use case relationships - extends
+UC5 ..> UC4 : <<extend>>
+UC10 ..> UC6 : <<extend>>
+UC11 ..> UC6 : <<extend>>
+UC12 ..> UC6 : <<extend>>
+UC13 ..> UC6 : <<extend>>
+UC14 ..> UC6 : <<extend>>
+UC15 ..> UC6 : <<extend>>
+UC17 ..> UC16 : <<extend>>
+UC18 ..> UC16 : <<extend>>
+UC19 ..> UC16 : <<extend>>
+UC20 ..> UC16 : <<extend>>
+UC27 ..> UC25 : <<extend>>
+UC33 ..> UC30 : <<extend>>
+
+' Dependency relationships
+UC4 ..> UC1 : <<precondition>>
+UC16 ..> UC4 : <<precondition>>
+UC16 ..> UC1 : <<precondition>>
+UC20 ..> UC17 : <<precondition>>
+UC22 ..> UC20 : <<precondition>>
+UC23 ..> UC22 : <<precondition>>
+UC24 ..> UC23 : <<precondition>>
+
+' Notes for clarification
+note right of UC1
+    User provides phone number
+    System sends OTP via SMS
+    Initiates browser if not running
+end note
+
+note right of UC4
+    Searches trains between stations
+    Captures IRCTC API responses
+    Caches data for filtering
+    Requires: source, destination, 
+    date, and quota
+end note
+
+note right of UC16
+    Complete booking flow:
+    1. Select train and class
+    2. Provide passenger details
+    3. Submit booking form
+    4. Verify OTP
+    5. Complete payment
+end note
+
+note right of UC25
+    User types or speaks message
+    Frontend sends to Flask API
+    Agent processes with LLM
+    Agent selects and calls tools
+    Response sent back to user
+end note
+
+note right of UC35
+    LangChain ReAct agent:
+    - Parses user intent
+    - Maintains conversation history
+    - Plans action sequence
+    - Executes tool calls
+    - Generates natural response
+end note
+
+note right of UC37
+    Caches train search results
+    in memory for fast filtering
+    Avoids repeated API calls
+    Stores full train details
+end note
+
+note right of UC38
+    Selenium-wire captures
+    IRCTC API requests/responses
+    Extracts authentication tokens
+    Preserves session state
+end note
+
+note right of UC39
+    Selenium WebDriver:
+    - Fills forms automatically
+    - Clicks buttons
+    - Submits data
+    - Navigates pages
+    - Handles popups
+end note
+
+note bottom of UC27
+    Web Speech API integration:
+    - Speech recognition
+    - Real-time transcription
+    - Supports Chrome, Edge, Safari
+    - Fallback to text input
+end note
+
+note bottom of UC29
+    Session-based context:
+    - Stores per-user history
+    - Maintains conversation flow
+    - References previous queries
+    - Enables natural dialogue
+end note
+
+' Legend
+legend right
+    |= Symbol |= Meaning |
+    | <<include>> | Required functionality |
+    | <<extend>> | Optional functionality |
+    | <<precondition>> | Must complete first |
+endlegend
+
+@enduml

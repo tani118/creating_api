@@ -1,0 +1,408 @@
+@startuml Train Booking System - Sequence Diagram
+
+title Train Booking System - Complete User Flow
+
+actor User
+participant "ChatInterface\n(React)" as Frontend
+participant "Flask API\n(main.py)" as Backend
+participant "LangChain Agent\n(agent.py)" as Agent
+participant "Tools\n(tools.py)" as Tools
+participant "Selenium Driver" as Browser
+participant "IRCTC Website" as IRCTC
+participant "LLM\n(Groq/Gemini)" as LLM
+
+== Initialization ==
+User -> Frontend: Opens Application
+activate Frontend
+Frontend -> Frontend: generateSessionId()
+Frontend -> Frontend: Initialize WebSpeechAPI
+Frontend -> User: Display Welcome Message
+deactivate Frontend
+
+== Sign In Flow ==
+User -> Frontend: "I want to book train"
+activate Frontend
+Frontend -> Backend: POST /chat\n{message, session_id}
+activate Backend
+Backend -> Agent: chat(message, session_id)
+activate Agent
+Agent -> LLM: Process message with\nconversation history
+activate LLM
+LLM -> Agent: "Ask for phone number"
+deactivate LLM
+Agent -> Backend: Return response
+deactivate Agent
+Backend -> Frontend: {"response": "Please provide phone"}
+deactivate Backend
+Frontend -> User: "Please provide phone number"
+deactivate Frontend
+
+User -> Frontend: Enters phone number
+activate Frontend
+Frontend -> Backend: POST /chat\n{phone_number, session_id}
+activate Backend
+Backend -> Agent: chat(message, session_id)
+activate Agent
+Agent -> LLM: Analyze message
+activate LLM
+LLM -> Agent: Use signin_user tool
+deactivate LLM
+Agent -> Tools: signin_user(phone_number)
+activate Tools
+Tools -> Backend: GET /init-browser
+Backend -> Browser: init_driver()
+activate Browser
+Browser -> IRCTC: Navigate to IRCTC
+activate IRCTC
+IRCTC -> Browser: Load page
+deactivate IRCTC
+Browser -> Backend: Browser ready
+deactivate Browser
+Tools -> Backend: POST /signin\n{phone_number}
+Backend -> Browser: Fill signin form
+activate Browser
+Browser -> IRCTC: Submit phone number
+activate IRCTC
+IRCTC -> IRCTC: Generate OTP
+IRCTC -> User: Send OTP via SMS
+IRCTC -> Browser: Show OTP page
+deactivate IRCTC
+Browser -> Backend: OTP page loaded
+deactivate Browser
+Tools -> Agent: "OTP sent to phone"
+deactivate Tools
+Agent -> Backend: Return response
+deactivate Agent
+Backend -> Frontend: {"response": "OTP sent"}
+deactivate Backend
+Frontend -> User: "Please provide OTP"
+deactivate Frontend
+
+User -> Frontend: Enters OTP
+activate Frontend
+Frontend -> Backend: POST /chat\n{otp, session_id}
+activate Backend
+Backend -> Agent: chat(message, session_id)
+activate Agent
+Agent -> LLM: Process OTP input
+activate LLM
+LLM -> Agent: Use submit_signin_otp
+deactivate LLM
+Agent -> Tools: submit_signin_otp(otp)
+activate Tools
+Tools -> Backend: POST /ask-otp-signin\n{otp}
+Backend -> Browser: Fill and submit OTP
+activate Browser
+Browser -> IRCTC: Submit OTP
+activate IRCTC
+IRCTC -> IRCTC: Verify OTP
+IRCTC -> Browser: Sign in successful
+deactivate IRCTC
+Browser -> Backend: Signed in
+deactivate Browser
+Tools -> Agent: "Successfully signed in"
+deactivate Tools
+Agent -> Backend: Return response
+deactivate Agent
+Backend -> Frontend: {"response": "Signed in successfully"}
+deactivate Backend
+Frontend -> User: "Signed in! Where do you want to travel?"
+deactivate Frontend
+
+== Train Search Flow ==
+User -> Frontend: "Find trains from Delhi to Mumbai on 25th Nov"
+activate Frontend
+Frontend -> Backend: POST /chat\n{message, session_id}
+activate Backend
+Backend -> Agent: chat(message, session_id)
+activate Agent
+Agent -> LLM: Parse travel details
+activate LLM
+LLM -> LLM: Extract: source=Delhi,\ndest=Mumbai, date=25-11-2025
+LLM -> Agent: Need station codes,\nuse get_city_stations
+deactivate LLM
+Agent -> Tools: get_city_stations("Delhi")
+activate Tools
+Tools -> Tools: Load indian_railway_stations.json
+Tools -> Agent: Return station list\n(NDLS, DLI, NZM, etc.)
+deactivate Tools
+Agent -> LLM: Station codes available
+activate LLM
+LLM -> Agent: Ask user to select station
+deactivate LLM
+Agent -> Backend: Return response
+deactivate Agent
+Backend -> Frontend: {"response": "Stations in Delhi:\n1. NDLS - New Delhi..."}
+deactivate Backend
+Frontend -> User: Show station options
+deactivate Frontend
+
+User -> Frontend: "NDLS to BCT"
+activate Frontend
+Frontend -> Backend: POST /chat\n{message, session_id}
+activate Backend
+Backend -> Agent: chat(message, session_id)
+activate Agent
+Agent -> LLM: Parse station codes
+activate LLM
+LLM -> Agent: Use search_trains tool
+deactivate LLM
+Agent -> Tools: search_trains(\n{"source":"NDLS",\n"destination":"BCT",\n"date":"25-11-2025",\n"quota":"GN"})
+activate Tools
+Tools -> Backend: POST /getTrainDetailsWithRefresh\n{SRC, DST, JDATE, JQUOTA}
+activate Backend
+Backend -> Browser: Navigate to IRCTC search URL
+activate Browser
+Browser -> IRCTC: GET train search page
+activate IRCTC
+IRCTC -> IRCTC: Process search request
+IRCTC -> Browser: Return train data\n(API response)
+deactivate IRCTC
+Browser -> Browser: Capture API request\n(selenium-wire)
+Browser -> Backend: Train data captured
+deactivate Browser
+Backend -> Backend: Store in cached_train_data
+Backend -> Tools: Return search summary
+deactivate Backend
+Tools -> Agent: "Found 50 trains"
+deactivate Tools
+Agent -> LLM: Ask next action
+activate LLM
+LLM -> Agent: Use get_available_trains
+deactivate LLM
+Agent -> Tools: get_available_trains()
+activate Tools
+Tools -> Backend: GET /trains/available
+activate Backend
+Backend -> Backend: Filter cached_train_data\nfor available seats
+Backend -> Tools: Return available trains
+deactivate Backend
+Tools -> Agent: Return formatted list
+deactivate Tools
+Agent -> Backend: Return response
+deactivate Agent
+Backend -> Frontend: {"response": "Found 25 trains with availability..."}
+deactivate Backend
+Frontend -> User: Display available trains
+deactivate Frontend
+
+== Train Filtering ==
+User -> Frontend: "Show cheapest in 3AC"
+activate Frontend
+Frontend -> Backend: POST /chat\n{message, session_id}
+activate Backend
+Backend -> Agent: chat(message, session_id)
+activate Agent
+Agent -> LLM: Parse filter request
+activate LLM
+LLM -> Agent: Use get_cheapest_trains\nwith class filter
+deactivate LLM
+Agent -> Tools: get_cheapest_trains("3A")
+activate Tools
+Tools -> Backend: GET /trains/cheapest?class=3A
+activate Backend
+Backend -> Backend: Sort cached_train_data\nby fare in 3A class
+Backend -> Tools: Return sorted trains
+deactivate Backend
+Tools -> Agent: Return top 5 cheapest
+deactivate Tools
+Agent -> Backend: Return response
+deactivate Agent
+Backend -> Frontend: {"response": "Top cheapest 3AC trains:\n1. Train 12345..."}
+deactivate Backend
+Frontend -> User: Show filtered results
+deactivate Frontend
+
+== Train Details ==
+User -> Frontend: "Show details of train 12345"
+activate Frontend
+Frontend -> Backend: POST /chat\n{message, session_id}
+activate Backend
+Backend -> Agent: chat(message, session_id)
+activate Agent
+Agent -> LLM: Parse train number
+activate LLM
+LLM -> Agent: Use get_train_details
+deactivate LLM
+Agent -> Tools: get_train_details("12345")
+activate Tools
+Tools -> Backend: GET /trains/12345
+activate Backend
+Backend -> Backend: Find train in\ncached_train_data
+Backend -> Tools: Return complete details
+deactivate Backend
+Tools -> Agent: Return formatted details
+deactivate Tools
+Agent -> Backend: Return response
+deactivate Agent
+Backend -> Frontend: {"response": "Train Details:\nNumber: 12345..."}
+deactivate Backend
+Frontend -> User: Display train details
+deactivate Frontend
+
+== Booking Flow ==
+User -> Frontend: "Book this train for 2 passengers"
+activate Frontend
+Frontend -> Backend: POST /chat\n{message, session_id}
+activate Backend
+Backend -> Agent: chat(message, session_id)
+activate Agent
+Agent -> LLM: Recognize booking intent
+activate LLM
+LLM -> Agent: Ask for passenger details
+deactivate LLM
+Agent -> Backend: Return response
+deactivate Agent
+Backend -> Frontend: {"response": "Please provide passenger details..."}
+deactivate Backend
+Frontend -> User: Ask for passenger info
+deactivate Frontend
+
+User -> Frontend: Provides passenger details
+activate Frontend
+Frontend -> Backend: POST /chat\n{passenger_details, session_id}
+activate Backend
+Backend -> Agent: chat(message, session_id)
+activate Agent
+Agent -> LLM: Parse passenger details
+activate LLM
+LLM -> Agent: Use book_train tool
+deactivate LLM
+Agent -> Tools: book_train({\n"train_number":"12345",\n"passenger_details":[...]})
+activate Tools
+Tools -> Tools: Validate all required fields
+Tools -> Backend: POST /booktrain/\n{booking_data}
+activate Backend
+Backend -> Browser: Fill booking form
+activate Browser
+Browser -> IRCTC: Navigate to booking page
+activate IRCTC
+IRCTC -> Browser: Load booking form
+deactivate IRCTC
+Browser -> Browser: Fill passenger details\nusing Selenium
+Browser -> IRCTC: Submit booking form
+activate IRCTC
+IRCTC -> IRCTC: Validate booking
+IRCTC -> Browser: Show payment page
+deactivate IRCTC
+Browser -> Backend: Booking form submitted
+deactivate Browser
+Backend -> Tools: Return success
+deactivate Backend
+Tools -> Agent: "Booking initiated"
+deactivate Tools
+Agent -> Backend: Return response
+deactivate Agent
+Backend -> Frontend: {"response": "Booking initiated! Review and pay..."}
+deactivate Backend
+Frontend -> User: Show booking confirmation
+deactivate Frontend
+
+== Payment Flow ==
+User -> Frontend: "Show payment page"
+activate Frontend
+Frontend -> Backend: POST /chat\n{message, session_id}
+activate Backend
+Backend -> Agent: chat(message, session_id)
+activate Agent
+Agent -> LLM: Recognize show payment intent
+activate LLM
+LLM -> Agent: Use show_payment_page
+deactivate LLM
+Agent -> Tools: show_payment_page()
+activate Tools
+Tools -> Backend: GET /show-payment-page
+activate Backend
+Backend -> Browser: Maximize and show window
+activate Browser
+Browser -> Backend: Window visible
+deactivate Browser
+Backend -> Tools: Return status
+deactivate Backend
+Tools -> Agent: "Payment page visible"
+deactivate Tools
+Agent -> Backend: Return response
+deactivate Agent
+Backend -> Frontend: {"response": "Payment page shown"}
+deactivate Backend
+Frontend -> User: "Complete payment on browser"
+deactivate Frontend
+
+User -> Browser: Completes payment manually
+activate Browser
+Browser -> IRCTC: Submit payment
+activate IRCTC
+IRCTC -> IRCTC: Process payment
+IRCTC -> Browser: Booking confirmed
+deactivate IRCTC
+Browser -> User: Show PNR/booking details
+deactivate Browser
+
+== Clear History ==
+User -> Frontend: Clicks "Clear Chat"
+activate Frontend
+Frontend -> Backend: POST /chat/clear\n{session_id}
+activate Backend
+Backend -> Agent: clear_history(session_id)
+activate Agent
+Agent -> Agent: Delete chat_histories[session_id]
+Agent -> Backend: {"success": true}
+deactivate Agent
+Backend -> Frontend: Success response
+deactivate Backend
+Frontend -> Frontend: Reset messages
+Frontend -> User: "Chat history cleared"
+deactivate Frontend
+
+== Voice Input Flow ==
+User -> Frontend: Clicks microphone button
+activate Frontend
+Frontend -> Frontend: Check speechSupported
+Frontend -> Frontend: WebSpeechAPI.startListening()
+Frontend -> User: Show recording indicator
+User -> Frontend: Speaks message
+Frontend -> Frontend: Convert speech to text
+Frontend -> Frontend: Set input text
+Frontend -> User: Display transcribed text
+deactivate Frontend
+
+== Error Handling ==
+User -> Frontend: Request fails
+activate Frontend
+Frontend -> Backend: POST /chat
+activate Backend
+Backend -> Agent: chat(message)
+activate Agent
+Agent -> Tools: Some tool call fails
+activate Tools
+Tools -> Agent: Return error
+deactivate Tools
+Agent -> LLM: Error occurred
+activate LLM
+LLM -> Agent: Use reset_browser
+deactivate LLM
+Agent -> Tools: reset_browser()
+activate Tools
+Tools -> Backend: GET /tryagain
+activate Backend
+Backend -> Backend: Clear cached_train_data
+Backend -> Browser: Navigate to home page
+activate Browser
+Browser -> IRCTC: GET homepage
+activate IRCTC
+IRCTC -> Browser: Load homepage
+deactivate IRCTC
+Browser -> Backend: Reset complete
+deactivate Browser
+Backend -> Tools: Success
+deactivate Backend
+Tools -> Agent: "Browser reset"
+deactivate Tools
+Agent -> Backend: "Ready to try again"
+deactivate Agent
+Backend -> Frontend: {"response": "System reset, please try again"}
+deactivate Backend
+Frontend -> User: Show error + recovery message
+deactivate Frontend
+
+@enduml

@@ -1,0 +1,398 @@
+@startuml Train Booking System - Class Diagram
+
+title Train Booking System - Object-Oriented Design
+
+' Frontend Classes
+package "Frontend (Next.js/React)" {
+    class ChatInterface {
+        - messages: ChatMessage[]
+        - input: string
+        - isLoading: boolean
+        - sessionId: string
+        - isRecording: boolean
+        - speechSupported: boolean
+        - messagesEndRef: RefObject
+        - webSpeechRef: RefObject<WebSpeechAPI>
+        + handleSend(): Promise<void>
+        + handleClear(): Promise<void>
+        + handleKeyPress(event): void
+        + handleVoiceInput(): Promise<void>
+        + scrollToBottom(): void
+    }
+
+    class ChatMessage {
+        + role: 'user' | 'assistant'
+        + content: string
+        + timestamp: Date
+    }
+
+    class ChatAPI {
+        {static} + sendMessage(message: string, sessionId: string): Promise<ChatResponse>
+        {static} + clearHistory(sessionId: string): Promise<void>
+    }
+
+    class ChatResponse {
+        + success: boolean
+        + response: string
+        + session_id: string
+        + error?: string
+    }
+
+    class WebSpeechAPI {
+        - recognition: SpeechRecognition
+        - listening: boolean
+        + isSupported(): boolean
+        + startListening(): Promise<string>
+        + stopListening(): void
+    }
+
+    class Button {
+        + variant: string
+        + size: string
+        + onClick: Function
+        + disabled: boolean
+        + className: string
+    }
+
+    class Input {
+        + value: string
+        + onChange: Function
+        + onKeyDown: Function
+        + placeholder: string
+        + disabled: boolean
+        + className: string
+    }
+
+    class Card {
+        + className: string
+        + children: ReactNode
+    }
+}
+
+' Backend Classes
+package "Backend (Flask)" {
+    class FlaskApp {
+        - driver: WebDriver
+        - cached_train_data: dict
+        - userTokens: dict
+        + init_driver(): WebDriver
+        + getTrainDetailsWithRefresh(): Response
+        + get_available_trains(): Response
+        + get_cheapest_trains(): Response
+        + get_fastest_trains(): Response
+        + get_train_details(train_number): Response
+        + filter_trains(): Response
+        + book_train(): Response
+        + signin(): Response
+        + ask_otp_signin(): Response
+        + show_payment_page(): Response
+        + hide_browser(): Response
+        + tryagain(): Response
+        + closeBrowser(): Response
+        + chat_endpoint(): Response
+        + clear_history_endpoint(): Response
+    }
+
+    class UserTokens {
+        + userName: dict
+        - userToken: string
+        - dSession: string
+        - sessionId: string
+        - capturedPayload: dict
+        - capturedHeaders: dict
+    }
+
+    class SeleniumDriver {
+        + driver: ChromeDriver
+        + requests: list
+        + get(url: string): void
+        + quit(): void
+        + set_window_position(x, y): void
+        + execute_cdp_cmd(command, params): void
+        + current_url: string
+    }
+}
+
+' Agent Classes
+package "LangChain Agent (agent.py)" {
+    class TrainBookingAgent {
+        - llm: ChatGroq | ChatGoogleGenerativeAI
+        - tools: list
+        - agent: ReactAgent
+        - agent_executor: AgentExecutor
+        - chat_histories: dict
+        + chat(message: string, session_id: string): dict
+        + clear_history(session_id: string): dict
+        - get_chat_history(session_id: string): string
+    }
+
+    class ChatMessageHistory {
+        + messages: list
+        + add_user_message(message: string): void
+        + add_ai_message(message: string): void
+    }
+
+    abstract class BaseLLM {
+        # model: string
+        # temperature: float
+        # max_tokens: int
+        {abstract} + invoke(prompt): string
+    }
+
+    class ChatGroq {
+        - groq_api_key: string
+        + invoke(prompt): string
+    }
+
+    class ChatGoogleGenerativeAI {
+        - google_api_key: string
+        + invoke(prompt): string
+    }
+
+    class AgentExecutor {
+        - agent: ReactAgent
+        - tools: list
+        - verbose: boolean
+        - max_iterations: int
+        - max_execution_time: int
+        + invoke(input: dict): dict
+    }
+
+    class ReactAgent {
+        - llm: BaseLLM
+        - tools: list
+        - prompt: PromptTemplate
+        + plan(input: string): list
+        + execute(actions: list): string
+    }
+
+    class PromptTemplate {
+        - template: string
+        + from_template(template: string): PromptTemplate
+        + format(variables: dict): string
+    }
+}
+
+' Tools Classes
+package "Tools (tools.py)" {
+    class ToolRegistry {
+        {static} + search_trains: Tool
+        {static} + get_available_trains: Tool
+        {static} + get_cheapest_trains: Tool
+        {static} + get_fastest_trains: Tool
+        {static} + get_train_details: Tool
+        {static} + filter_trains: Tool
+        {static} + book_train: Tool
+        {static} + get_train_booking_options: Tool
+        {static} + get_train_route: Tool
+        {static} + get_trains_summary: Tool
+        {static} + get_trains_by_class: Tool
+        {static} + get_trains_by_type: Tool
+        {static} + book_train_submit: Tool
+        {static} + submit_booking_otp: Tool
+        {static} + signin_user: Tool
+        {static} + submit_signin_otp: Tool
+        {static} + show_payment_page: Tool
+        {static} + hide_browser: Tool
+        {static} + reset_browser: Tool
+        {static} + close_browser: Tool
+        {static} + get_city_stations: Tool
+    }
+
+    abstract class BaseTool {
+        + name: string
+        + description: string
+        {abstract} + _run(query: string): string
+    }
+
+    class SearchTrainsTool {
+        + name: "search_trains"
+        + description: "Search for trains..."
+        + _run(query: string): string
+    }
+
+    class GetAvailableTrainsTool {
+        + name: "get_available_trains"
+        + description: "Get available trains..."
+        + _run(dummy: string): string
+    }
+
+    class BookTrainTool {
+        + name: "book_train"
+        + description: "Book train with passenger details..."
+        + _run(booking_data: string): string
+    }
+
+    class SignInUserTool {
+        + name: "signin_user"
+        + description: "Sign in user with phone..."
+        + _run(phone_number: string): string
+    }
+
+    class GetCityStationsTool {
+        + name: "get_city_stations"
+        + description: "Get stations for a city..."
+        + _run(city_name: string): string
+    }
+}
+
+' Data Models
+package "Data Models" {
+    class Train {
+        + trainNumber: string
+        + trainName: string
+        + fromStnCode: string
+        + toStnCode: string
+        + departureTime: string
+        + arrivalTime: string
+        + duration: string
+        + distance: string
+        + trainType: string[]
+        + availability: Availability[]
+        + runningDays: string[]
+    }
+
+    class Availability {
+        + className: string
+        + classCode: string
+        + totalFare: float
+        + availablityStatus: string
+        + details: AvailabilityDetails
+    }
+
+    class AvailabilityDetails {
+        + avlDayList: dict
+        + bookingAllowed: boolean
+        + reasonType: string
+    }
+
+    class PassengerDetails {
+        + name: string
+        + age: int
+        + gender: string
+        + berth_preference: string
+        + food_preference: string
+    }
+
+    class BookingRequest {
+        + train_number: string
+        + quota: string
+        + class: string
+        + journey_date: string
+        + passenger_details: PassengerDetails[]
+    }
+
+    class StationInfo {
+        + code: string
+        + name: string
+        + city: string
+    }
+}
+
+' External Services
+package "External Services" {
+    class IRCTCWebsite {
+        + searchTrains(params): TrainData
+        + bookTicket(details): BookingConfirmation
+        + sendOTP(phone): boolean
+        + verifyOTP(otp): boolean
+        + processPayment(details): PaymentStatus
+    }
+
+    class GroqAPI {
+        + chat(messages): string
+    }
+
+    class GeminiAPI {
+        + generateContent(prompt): string
+    }
+}
+
+' Relationships - Frontend
+ChatInterface "1" *-- "*" ChatMessage : contains
+ChatInterface --> ChatAPI : uses
+ChatInterface --> WebSpeechAPI : uses
+ChatInterface *-- "3" Button : uses
+ChatInterface *-- "1" Input : uses
+ChatInterface *-- "*" Card : uses
+ChatAPI ..> ChatResponse : returns
+
+' Relationships - Backend
+FlaskApp "1" *-- "1" SeleniumDriver : uses
+FlaskApp "1" *-- "1" UserTokens : manages
+FlaskApp --> IRCTCWebsite : interacts with
+FlaskApp --> TrainBookingAgent : delegates to
+
+' Relationships - Agent
+TrainBookingAgent "1" *-- "1" BaseLLM : uses
+TrainBookingAgent "1" *-- "*" ChatMessageHistory : manages
+TrainBookingAgent "1" *-- "1" AgentExecutor : executes
+AgentExecutor "1" *-- "1" ReactAgent : contains
+ReactAgent --> PromptTemplate : uses
+ReactAgent --> ToolRegistry : uses
+BaseLLM <|-- ChatGroq
+BaseLLM <|-- ChatGoogleGenerativeAI
+ChatGroq --> GroqAPI : calls
+ChatGoogleGenerativeAI --> GeminiAPI : calls
+
+' Relationships - Tools
+ToolRegistry --> BaseTool : registers
+BaseTool <|-- SearchTrainsTool
+BaseTool <|-- GetAvailableTrainsTool
+BaseTool <|-- BookTrainTool
+BaseTool <|-- SignInUserTool
+BaseTool <|-- GetCityStationsTool
+SearchTrainsTool --> FlaskApp : HTTP requests
+GetAvailableTrainsTool --> FlaskApp : HTTP requests
+BookTrainTool --> FlaskApp : HTTP requests
+SignInUserTool --> FlaskApp : HTTP requests
+GetCityStationsTool ..> StationInfo : loads
+
+' Relationships - Data Models
+Train "1" *-- "*" Availability : has
+Availability "1" *-- "1" AvailabilityDetails : contains
+BookingRequest "1" *-- "*" PassengerDetails : includes
+FlaskApp ..> Train : manages
+FlaskApp ..> BookingRequest : processes
+
+' Frontend to Backend
+ChatAPI --> FlaskApp : HTTP/REST
+
+' Notes
+note right of ChatInterface
+    Main React component that handles
+    user interaction, message display,
+    voice input, and chat management
+end note
+
+note right of FlaskApp
+    Flask server that manages Selenium
+    WebDriver, handles IRCTC interactions,
+    caches train data, and provides REST API
+end note
+
+note right of TrainBookingAgent
+    LangChain agent with ReAct pattern
+    that uses LLM to understand user intent
+    and orchestrate tool calls for booking
+end note
+
+note right of ToolRegistry
+    Collection of @tool decorated functions
+    that agent can invoke to search trains,
+    filter results, book tickets, etc.
+end note
+
+note right of SeleniumDriver
+    Selenium WebDriver with selenium-wire
+    to capture API requests and automate
+    IRCTC website interactions
+end note
+
+note bottom of BaseLLM
+    Supports multiple LLM providers:
+    - Groq (Llama 3.3 70B)
+    - Google Gemini (2.5 Flash)
+end note
+
+@enduml
