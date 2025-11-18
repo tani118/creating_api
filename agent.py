@@ -32,6 +32,7 @@ from tools import (
     hide_browser,
     signin_user,
     submit_signin_otp,
+    reset_browser,
     close_browser,
     get_city_stations
 )
@@ -79,6 +80,7 @@ tools = [
     submit_signin_otp,
     show_payment_page,
     hide_browser,
+    reset_browser,
     close_browser,
     get_city_stations
 ]
@@ -148,6 +150,12 @@ IMPORTANT:
 - Instead, use "Final Answer" to ask them directly - this is how you communicate with users
 - For search_trains Action Input, provide a JSON string like: {{"source": "NDLS", "destination": "BCT", "date": "25-11-2025", "quota": "GN"}}
 - NEVER write "Action: None" - if you want to talk to the user, go directly to "Final Answer"
+
+ERROR HANDLING:
+- If any action fails or you encounter an error during train search or booking, use the reset_browser tool
+- The reset_browser tool will clear cache, reset browser state, and prepare for a fresh attempt
+- After using reset_browser, you can retry the failed operation
+- Use reset_browser when: search fails, booking gets stuck, user says "try again", or browser is on wrong page
 
 Begin!
 

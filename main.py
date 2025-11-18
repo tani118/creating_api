@@ -106,7 +106,7 @@ def init_driver():
         
         # Move browser window off-screen (but keep it "visible" to the OS)
         # Temporarily disabled for debugging - uncomment when ready
-        driver.set_window_position(-2000, 0)  # Move to left off-screen
+        #driver.set_window_position(-2000, 0)  # Move to left off-screen
         
         # Execute CDP commands to mask automation
         driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
@@ -214,7 +214,14 @@ def getTrainDetailsWithRefresh():
     JDATE = data.get('JDATE')
     JQUOTA = data.get('JQUOTA')
     
-    driver = init_driver()
+    # Only initialize driver if it doesn't exist
+    if not driver:
+        driver = init_driver()
+        time.sleep(5)
+    
+    # Clear previous request history to avoid capturing old train search responses
+    del driver.requests
+    
     driver.get(f"https://askdisha.irctc.co.in/?FROM={SRC}&TO={DST}&DATE={JDATE}&QUOTA={JQUOTA}")
     time.sleep(15)
 
@@ -782,7 +789,7 @@ def book_train_submit():
         print("Input IRCTC user id if prompted")
         irctc_id=driver.find_element(By.XPATH, "//*[@id='passengers']/div/div[2]/div[1]/input")
         irctc_id.send_keys("lakshyabhutani")  # Replace with actual user id
-        time.sleep(1)
+        time.sleep(2)
         verify_and_proceed_button = driver.find_element(By.XPATH, "//*[@id='passengers']/div/div[2]/button")
         verify_and_proceed_button.click()
         time.sleep(3)
@@ -828,10 +835,10 @@ def book_train_submit():
         print(f"Selecting gender: {gender}")
         if gender == "Male":  # Changed from 'is' to '=='
             driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[2]/div[1]/div/span/div[1]/div[1]/div").click()
-            time.sleep(1)
+            time.sleep(2)
         elif gender == "Female":  # Changed from 'is' to '=='
             driver.find_element(By.XPATH, "//*[@id='passengers']/div/div/div/div[2]/div[1]/div/span/div[1]/div[2]/div").click()
-            time.sleep(1)
+            time.sleep(2)
 
         time.sleep(2)  # Add small delay after gender selection
 
@@ -845,7 +852,7 @@ def book_train_submit():
         age_field = driver.find_element(By.ID, "age")
         age_field.clear()
         age_field.send_keys(str(passenger.get('age')))
-        time.sleep(1)
+        time.sleep(2)
 
         # if passenger.get('food_preference'):
         #     try:
@@ -960,7 +967,7 @@ def hide_browser():
             return jsonify({"error": "No active browser session"}), 400
         
         # Move off-screen (don't minimize - it breaks JavaScript execution)
-        driver.set_window_position(-2000, 0)
+        #driver.set_window_position(-2000, 0)
         
         return jsonify({
             "message": "Browser hidden successfully",
@@ -1218,6 +1225,29 @@ def cache_stats():
             "destination": trains[0].get('toStnCode') if trains else None
         }
     })
+@app.route("/tryagain", methods=["GET"])
+def try_again():
+    global driver, cached_train_data
+    
+    if not driver:
+        driver = init_driver()
+        time.sleep(5)
+    
+    # Clear cached train data to force fresh search
+    cached_train_data = None
+    
+    # Clear selenium-wire request history to avoid stale request data
+    del driver.requests
+    
+    # Navigate back to home page
+    driver.get("https://askdisha.irctc.co.in")
+    time.sleep(15)
+    
+    return jsonify({
+        "message": "Browser reset successfully. Cache cleared. Ready for new search.",
+        "status": "success"
+    })
+    
 
 
 if __name__ == "__main__":

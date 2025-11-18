@@ -878,9 +878,40 @@ def submit_signin_otp(otp: str) -> str:
 
 
 @tool
+def reset_browser(dummy: str = "") -> str:
+    """
+    Reset the browser to initial state - clears cache and navigates back to home page.
+    Use this tool when:
+    - An error occurs during train search or booking
+    - User asks to "try again" or "start over"
+    - Browser is on wrong page and needs to be reset
+    - Need to clear previous search data before a new search
+    
+    This tool will:
+    - Clear cached train data
+    - Clear request history
+    - Navigate back to IRCTC home page
+    
+    Args:
+        dummy: Not used, just for compatibility (can pass empty string or any value)
+    
+    Returns:
+        Status message
+    """
+    try:
+        response = requests.get(f"{BACKEND_URL}/tryagain", timeout=60)
+        
+        if response.status_code == 200:
+            return "Browser reset successfully. Cache cleared. Ready for new search."
+        else:
+            return f"Error resetting browser: {response.status_code}"
+    except Exception as e:
+        return f"Failed to reset browser: {str(e)}"
+
+@tool
 def close_browser(dummy: str = "") -> str:
     """
-    Close the Selenium browser instance.
+    Close the Selenium browser instance completely.
     Use this when user explicitly asks to close browser or when done with all operations.
     This helps free up system resources.
     
