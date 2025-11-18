@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Send, Bot, User, Loader2, Trash2, Mic, MicOff } from 'lucide-react';
+import { Send, Bot, User, Loader2, Trash2, Mic, MicOff, Moon, Sun } from 'lucide-react';
 import { Button } from './button';
 import { Input } from './input';
 import { Card } from './card';
@@ -16,6 +16,7 @@ export default function ChatInterface() {
   const [mounted, setMounted] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const webSpeechRef = useRef<WebSpeechAPI | null>(null);
 
@@ -134,29 +135,53 @@ export default function ChatInterface() {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+    <div className={`flex flex-col h-screen relative overflow-hidden transition-colors duration-300 ${
+      isDarkMode 
+        ? 'bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900' 
+        : 'bg-gradient-to-br from-gray-50 via-slate-50 to-blue-50'
+    }`}>
       {/* Modern Background Pattern */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+        {isDarkMode ? (
+          <>
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl"></div>
+          </>
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-500/5 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl"></div>
+          </>
+        )}
       </div>
 
       {/* Header */}
-      <div className="relative bg-slate-800/90 backdrop-blur-xl border-b border-slate-700/50">
+      <div className={`relative backdrop-blur-xl border-b transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-slate-800/90 border-slate-700/50' 
+          : 'bg-white/80 border-gray-200'
+      }`}>
         <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl blur-md opacity-60"></div>
-              <div className="relative bg-gradient-to-br from-emerald-500 to-blue-600 p-3 rounded-2xl">
+              <div className={`absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl blur-md ${
+                isDarkMode ? 'opacity-60' : 'opacity-40'
+              }`}></div>
+              <div className="relative bg-gradient-to-br from-emerald-500 to-blue-600 p-3 rounded-2xl shadow-lg">
                 <Bot className="w-7 h-7 text-white" />
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white tracking-tight">
+              <h1 className={`text-2xl font-bold tracking-tight transition-colors duration-300 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
                 Railway Assistant
               </h1>
-              <p className="text-sm text-slate-400 flex items-center gap-2 mt-1">
+              <p className={`text-sm flex items-center gap-2 mt-1 transition-colors duration-300 ${
+                isDarkMode ? 'text-slate-400' : 'text-gray-600'
+              }`}>
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -165,15 +190,34 @@ export default function ChatInterface() {
               </p>
             </div>
           </div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={handleClear} 
-            title="Clear chat"
-            className="text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all rounded-xl"
-          >
-            <Trash2 className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setIsDarkMode(!isDarkMode)} 
+              title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+              className={`transition-all rounded-xl ${
+                isDarkMode 
+                  ? 'text-slate-400 hover:text-white hover:bg-slate-700/50' 
+                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={handleClear} 
+              title="Clear chat"
+              className={`transition-all rounded-xl ${
+                isDarkMode 
+                  ? 'text-slate-400 hover:text-white hover:bg-slate-700/50' 
+                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
+              }`}
+            >
+              <Trash2 className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -202,24 +246,26 @@ export default function ChatInterface() {
                 )}
               </div>
               <Card
-                className={`max-w-[75%] border-0 ${
+                className={`max-w-[75%] border-0 transition-colors duration-300 ${
                   message.role === 'user'
-                    ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-xl shadow-blue-900/30'
-                    : 'bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 shadow-xl shadow-black/20 text-slate-100'
+                    ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-xl shadow-blue-600/20'
+                    : isDarkMode
+                    ? 'bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 shadow-xl shadow-black/20 text-slate-100'
+                    : 'bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg text-gray-900'
                 }`}
               >
                 <div className="p-4">
-                  <p className={`text-[15px] whitespace-pre-wrap break-words leading-relaxed ${
-                    message.role === 'user' ? 'text-white' : 'text-slate-100'
+                  <p className={`text-[15px] whitespace-pre-wrap break-words leading-relaxed transition-colors duration-300 ${
+                    message.role === 'user' ? 'text-white' : isDarkMode ? 'text-slate-100' : 'text-gray-900'
                   }`}>
                     {message.content}
                   </p>
                   {mounted && (
                     <p
-                      className={`text-[11px] mt-3 font-medium ${
+                      className={`text-[11px] mt-3 font-medium transition-colors duration-300 ${
                         message.role === 'user'
                           ? 'text-blue-200/70'
-                          : 'text-slate-400'
+                          : isDarkMode ? 'text-slate-400' : 'text-gray-500'
                       }`}
                     >
                       {message.timestamp.toLocaleTimeString([], {
@@ -237,14 +283,20 @@ export default function ChatInterface() {
               <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-blue-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
                 <Bot className="w-5 h-5 text-white animate-pulse" />
               </div>
-              <Card className="bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 shadow-xl shadow-black/20 text-slate-100">
+              <Card className={`transition-colors duration-300 ${
+                isDarkMode
+                  ? 'bg-slate-800/60 backdrop-blur-sm border border-slate-700/50 shadow-xl shadow-black/20 text-slate-100'
+                  : 'bg-white/90 backdrop-blur-sm border border-gray-200 shadow-lg text-gray-900'
+              }`}>
                 <div className="p-4 flex items-center gap-3">
                   <div className="flex gap-1.5">
-                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></span>
-                    <span className="w-2 h-2 bg-blue-400 rounded-full animate-bounce delay-100"></span>
-                    <span className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce delay-200"></span>
+                    <span className={`w-2 h-2 rounded-full animate-bounce ${isDarkMode ? 'bg-emerald-400' : 'bg-emerald-500'}`}></span>
+                    <span className={`w-2 h-2 rounded-full animate-bounce delay-100 ${isDarkMode ? 'bg-blue-400' : 'bg-blue-500'}`}></span>
+                    <span className={`w-2 h-2 rounded-full animate-bounce delay-200 ${isDarkMode ? 'bg-emerald-400' : 'bg-emerald-500'}`}></span>
                   </div>
-                  <span className="text-sm text-slate-300 font-medium">Processing your request...</span>
+                  <span className={`text-sm font-medium transition-colors duration-300 ${
+                    isDarkMode ? 'text-slate-300' : 'text-gray-700'
+                  }`}>Processing your request...</span>
                 </div>
               </Card>
             </div>
@@ -254,7 +306,11 @@ export default function ChatInterface() {
       </div>
 
       {/* Input */}
-      <div className="relative bg-slate-800/90 backdrop-blur-xl border-t border-slate-700/50">
+      <div className={`relative backdrop-blur-xl border-t transition-colors duration-300 ${
+        isDarkMode 
+          ? 'bg-slate-800/90 border-slate-700/50' 
+          : 'bg-white/80 border-gray-200'
+      }`}>
         <div className="max-w-5xl mx-auto px-6 py-6">
           <div className="flex gap-3 items-end">
             <div className="flex-1 relative">
@@ -264,7 +320,11 @@ export default function ChatInterface() {
                 onKeyDown={handleKeyPress}
                 placeholder="Type your message... (e.g., 'Find trains from Delhi to Mumbai tomorrow')"
                 disabled={isLoading || isRecording}
-                className="bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 transition-all py-6 text-base rounded-xl"
+                className={`transition-all py-6 text-base rounded-xl ${
+                  isDarkMode
+                    ? 'bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30'
+                    : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm'
+                }`}
               />
             </div>
             {speechSupported && (
@@ -275,7 +335,9 @@ export default function ChatInterface() {
                 className={`h-12 w-12 rounded-xl shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 ${
                   isRecording 
                     ? 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-red-500/40 animate-pulse' 
-                    : 'bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-emerald-500/40'
+                    : isDarkMode
+                    ? 'bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-emerald-500/40'
+                    : 'bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-emerald-500/30'
                 }`}
               >
                 {isRecording ? (
@@ -288,7 +350,9 @@ export default function ChatInterface() {
             <Button
               onClick={handleSend}
               disabled={isLoading || !input.trim()}
-              className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/40 transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95"
+              className={`h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:scale-105 active:scale-95 ${
+                isDarkMode ? 'shadow-blue-500/40' : 'shadow-blue-500/30'
+              }`}
             >
               {isLoading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
@@ -298,11 +362,21 @@ export default function ChatInterface() {
             </Button>
           </div>
           <div className="flex items-center justify-center gap-2 mt-4">
-            <div className="flex items-center gap-2.5 px-4 py-2 bg-slate-700/30 backdrop-blur-sm rounded-xl border border-slate-600/30">
-              <span className="text-xs text-emerald-400 font-semibold">TIP</span>
-              <div className="w-1 h-1 rounded-full bg-slate-600"></div>
-              <p className="text-xs text-slate-400">
-                Quick search with station codes: <span className="text-white font-semibold mx-1">NDLS</span><span className="text-slate-600">•</span><span className="text-white font-semibold mx-1">BCT</span><span className="text-slate-600">•</span><span className="text-white font-semibold mx-1">SBC</span>
+            <div className={`flex items-center gap-2.5 px-4 py-2 backdrop-blur-sm rounded-xl transition-colors duration-300 ${
+              isDarkMode
+                ? 'bg-slate-700/30 border border-slate-600/30'
+                : 'bg-gradient-to-r from-blue-50 to-emerald-50 border border-blue-100'
+            }`}>
+              <span className={`text-xs font-semibold transition-colors duration-300 ${
+                isDarkMode ? 'text-emerald-400' : 'text-emerald-600'
+              }`}>TIP</span>
+              <div className={`w-1 h-1 rounded-full transition-colors duration-300 ${
+                isDarkMode ? 'bg-slate-600' : 'bg-gray-300'
+              }`}></div>
+              <p className={`text-xs transition-colors duration-300 ${
+                isDarkMode ? 'text-slate-400' : 'text-gray-600'
+              }`}>
+                Quick search with station codes: <span className={`font-semibold mx-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>NDLS</span><span className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}>•</span><span className={`font-semibold mx-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>BCT</span><span className={isDarkMode ? 'text-slate-600' : 'text-gray-300'}>•</span><span className={`font-semibold mx-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>SBC</span>
               </p>
             </div>
           </div>
