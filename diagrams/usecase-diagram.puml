@@ -5,7 +5,7 @@ title Train Booking System - User Interactions and System Functionality
 ' Actors
 :User: as User
 :IRCTC System: as IRCTC
-:LLM Service\n(Groq/Gemini): as LLM
+:LLM Service\n(Groq): as LLM
 
 ' System boundary
 rectangle "Train Booking Chatbot System" {

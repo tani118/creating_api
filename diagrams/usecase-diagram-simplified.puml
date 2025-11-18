@@ -1,0 +1,131 @@
+@startuml Train Booking System - Use Case Diagram (Simplified)
+
+title Train Booking System - Main Use Cases
+
+skinparam defaultFontSize 10
+skinparam packageStyle rectangle
+
+' Actors
+:User: as User
+:IRCTC: as IRCTC
+:LLM (Groq): as LLM
+
+' System boundary
+rectangle "Train Booking System" {
+    
+    ' Core Use Cases
+    package "Authentication" #LightBlue {
+        usecase "Sign In\nwith Phone" as Auth
+        usecase "Verify OTP" as OTP
+    }
+    
+    package "Train Search" #LightGreen {
+        usecase "Search Trains" as Search
+        usecase "Get City Stations" as Stations
+        usecase "View Available\nTrains" as Available
+        usecase "Get Train Details" as Details
+    }
+    
+    package "Filtering" #LightYellow {
+        usecase "Filter by Class" as FilterClass
+        usecase "Get Cheapest\nTrains" as Cheapest
+        usecase "Get Fastest\nTrains" as Fastest
+    }
+    
+    package "Booking" #LightCoral {
+        usecase "Book Ticket" as Book
+        usecase "Enter Passenger\nDetails" as Passenger
+        usecase "Select Class\n& Quota" as Select
+        usecase "Submit Booking" as Submit
+    }
+    
+    package "Payment" #LightPink {
+        usecase "Show Payment\nPage" as ShowPayment
+    }
+    
+    package "Conversation" #Lavender {
+        usecase "Send Message" as Message
+        usecase "Use Voice Input" as Voice
+        usecase "Clear History" as Clear
+    }
+    
+    package "Browser Control" #LightCyan {
+        usecase "Initialize\nBrowser" as InitBrowser
+        usecase "Show/Hide\nBrowser" as ToggleBrowser
+    }
+}
+
+' User relationships
+User --> Auth
+User --> Search
+User --> Stations
+User --> Available
+User --> FilterClass
+User --> Cheapest
+User --> Fastest
+User --> Book
+User --> Message
+User --> Voice
+User --> Clear
+User --> ShowPayment
+
+' IRCTC relationships
+IRCTC --> Auth : sends OTP
+IRCTC <-- Search : provides data
+IRCTC <-- Book : processes booking
+IRCTC --> Submit : sends OTP
+
+' LLM relationships
+LLM <-- Message : processes
+LLM --> Message : generates response
+
+' Include relationships
+Auth .> InitBrowser : <<include>>
+Auth .> OTP : <<include>>
+Search .> InitBrowser : <<include>>
+Book .> Passenger : <<include>>
+Book .> Select : <<include>>
+Book .> Submit : <<include>>
+
+' Extend relationships
+Stations ..> Search : <<extend>>
+FilterClass ..> Available : <<extend>>
+Cheapest ..> Available : <<extend>>
+Fastest ..> Available : <<extend>>
+Voice ..> Message : <<extend>>
+
+' Preconditions
+Search ..> Auth : <<precondition>>
+Book ..> Auth : <<precondition>>
+Book ..> Search : <<precondition>>
+ShowPayment ..> Submit : <<precondition>>
+
+' Notes
+note right of Auth
+  Phone number + OTP
+  Initializes browser
+  Manages session
+end note
+
+note right of Search
+  Station codes required
+  Caches train data
+  Selenium captures API
+end note
+
+note right of Book
+  Multi-step process:
+  1. Select train
+  2. Enter passengers
+  3. Submit form
+  4. Verify OTP
+end note
+
+note right of Message
+  LangChain agent:
+  - Parses intent
+  - Calls tools
+  - Natural responses
+end note
+
+@enduml

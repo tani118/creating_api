@@ -9,7 +9,7 @@ participant "LangChain Agent\n(agent.py)" as Agent
 participant "Tools\n(tools.py)" as Tools
 participant "Selenium Driver" as Browser
 participant "IRCTC Website" as IRCTC
-participant "LLM\n(Groq/Gemini)" as LLM
+participant "LLM\n(Groq)" as LLM
 
 == Initialization ==
 User -> Frontend: Opens Application
@@ -327,16 +327,6 @@ Backend -> Frontend: {"response": "Payment page shown"}
 deactivate Backend
 Frontend -> User: "Complete payment on browser"
 deactivate Frontend
-
-User -> Browser: Completes payment manually
-activate Browser
-Browser -> IRCTC: Submit payment
-activate IRCTC
-IRCTC -> IRCTC: Process payment
-IRCTC -> Browser: Booking confirmed
-deactivate IRCTC
-Browser -> User: Show PNR/booking details
-deactivate Browser
 
 == Clear History ==
 User -> Frontend: Clicks "Clear Chat"

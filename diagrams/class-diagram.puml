@@ -116,7 +116,7 @@ package "Backend (Flask)" {
 ' Agent Classes
 package "LangChain Agent (agent.py)" {
     class TrainBookingAgent {
-        - llm: ChatGroq | ChatGoogleGenerativeAI
+        - llm: ChatGroq
         - tools: list
         - agent: ReactAgent
         - agent_executor: AgentExecutor
@@ -141,11 +141,8 @@ package "LangChain Agent (agent.py)" {
 
     class ChatGroq {
         - groq_api_key: string
-        + invoke(prompt): string
-    }
-
-    class ChatGoogleGenerativeAI {
-        - google_api_key: string
+        - model: "llama-3.3-70b-versatile"
+        - temperature: 0.1
         + invoke(prompt): string
     }
 
@@ -301,10 +298,8 @@ package "External Services" {
 
     class GroqAPI {
         + chat(messages): string
-    }
-
-    class GeminiAPI {
-        + generateContent(prompt): string
+        - endpoint: "api.groq.com"
+        - model: "llama-3.3-70b-versatile"
     }
 }
 
@@ -331,9 +326,7 @@ AgentExecutor "1" *-- "1" ReactAgent : contains
 ReactAgent --> PromptTemplate : uses
 ReactAgent --> ToolRegistry : uses
 BaseLLM <|-- ChatGroq
-BaseLLM <|-- ChatGoogleGenerativeAI
 ChatGroq --> GroqAPI : calls
-ChatGoogleGenerativeAI --> GeminiAPI : calls
 
 ' Relationships - Tools
 ToolRegistry --> BaseTool : registers
@@ -390,9 +383,10 @@ note right of SeleniumDriver
 end note
 
 note bottom of BaseLLM
-    Supports multiple LLM providers:
-    - Groq (Llama 3.3 70B)
-    - Google Gemini (2.5 Flash)
+    Uses Groq API:
+    - Model: Meta Llama 3.3 70B Versatile
+    - Temperature: 0.1
+    - Max Tokens: 2048
 end note
 
 @enduml

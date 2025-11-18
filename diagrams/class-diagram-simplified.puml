@@ -1,0 +1,235 @@
+@startuml Train Booking System - Simplified Class Diagram
+
+title Train Booking System - Architecture Overview
+
+skinparam classAttributeIconSize 0
+skinparam defaultFontSize 10
+skinparam packageStyle rectangle
+skinparam linetype ortho
+
+' Frontend Layer
+package "Frontend (Next.js + React)" <<Rectangle>> {
+    class ChatInterface {
+        - messages: ChatMessage[]
+        - input: string
+        - isLoading: boolean
+        - sessionId: string
+        - messagesEndRef: RefObject
+        + handleSend(): Promise<void>
+        + handleClear(): Promise<void>
+        + handleKeyPress(event): void
+        + scrollToBottom(): void
+    }
+    
+    class ChatAPI {
+        {static} + sendMessage(message, sessionId): Promise
+        {static} + clearHistory(sessionId): Promise
+        - BACKEND_URL: string
+    }
+    
+    class WebSpeechAPI {
+        - recognition: SpeechRecognition
+        - listening: boolean
+        + startListening(): Promise<string>
+        + stopListening(): void
+        + isSupported(): boolean
+    }
+}
+
+' Backend Layer
+package "Backend API (Flask + Selenium)" <<Rectangle>> {
+    class FlaskApp {
+        - driver: SeleniumDriver
+        - cached_train_data: dict
+        - userTokens: dict
+        + init_driver(): WebDriver
+        + getTrainDetailsWithRefresh(): Response
+        + get_available_trains(): Response
+        + get_cheapest_trains(): Response
+        + filter_trains(): Response
+        + book_train_submit(): Response
+        + signin(): Response
+        + enter_otp(): Response
+        + show_payment_page(): Response
+        + chat_endpoint(): Response
+    }
+    
+    class SeleniumDriver {
+        + driver: ChromeDriver
+        + requests: list
+        + get(url: string): void
+        + find_element(by, value): WebElement
+        + execute_cdp_cmd(cmd, params): void
+        + set_window_position(x, y): void
+        + quit(): void
+    }
+    
+    class UserTokens {
+        + userToken: string
+        + dSession: string
+        + sessionId: string
+        + capturedPayload: dict
+        + capturedHeaders: dict
+    }
+}
+
+' AI Agent Layer
+package "AI Agent (LangChain)" <<Rectangle>> {
+    class TrainBookingAgent {
+        - llm: BaseLLM
+        - tools: list
+        - agent_executor: AgentExecutor
+        - chat_histories: dict
+        + chat(message, session_id): dict
+        + clear_history(session_id): dict
+        - get_chat_history(session_id): string
+    }
+    
+    abstract class BaseLLM {
+        # model: string
+        # temperature: float
+        # max_tokens: int
+        {abstract} + invoke(prompt): string
+    }
+    
+    class ChatGroq {
+        - groq_api_key: string
+        - model: "llama-3.3-70b-versatile"
+        + invoke(prompt): string
+    }
+    
+    class AgentExecutor {
+        - agent: ReactAgent
+        - tools: list
+        - verbose: boolean
+        - max_iterations: int
+        + invoke(input): dict
+    }
+    
+    class ToolRegistry {
+        {static} + search_trains
+        {static} + get_available_trains
+        {static} + get_cheapest_trains
+        {static} + filter_trains
+        {static} + book_train_submit
+        {static} + signin_user
+        {static} + submit_signin_otp
+        {static} + get_city_stations
+        {static} + show_payment_page
+        {static} + close_browser
+    }
+}
+
+' Data Models
+package "Data Models" <<Rectangle>> {
+    class Train {
+        + trainNumber: string
+        + trainName: string
+        + fromStnCode: string
+        + toStnCode: string
+        + departureTime: string
+        + arrivalTime: string
+        + duration: string
+        + availability: Availability[]
+        + trainType: string[]
+    }
+    
+    class Availability {
+        + className: string
+        + totalFare: float
+        + availablityStatus: string
+        + details: dict
+    }
+    
+    class BookingRequest {
+        + train_number: string
+        + quota: string
+        + class: string
+        + journey_date: string
+        + passenger_details: PassengerDetails[]
+    }
+    
+    class PassengerDetails {
+        + name: string
+        + age: int
+        + gender: string
+        + berth_preference: string
+        + food_preference: string
+    }
+    
+    class StationInfo {
+        + code: string
+        + name: string
+        + city: string
+    }
+}
+
+' External Services
+package "External Services" <<Rectangle>> {
+    class IRCTCWebsite {
+        + searchTrains(): TrainData
+        + bookTicket(): BookingStatus
+        + sendOTP(): boolean
+        + verifyOTP(): boolean
+    }
+    
+    class GroqAPI {
+        + chat(messages): string
+        - endpoint: "api.groq.com"
+    }
+}
+
+' Relationships - Frontend
+ChatInterface --> ChatAPI : uses
+ChatInterface --> WebSpeechAPI : voice input
+ChatAPI --> FlaskApp : HTTP/REST
+
+' Relationships - Backend
+FlaskApp "1" *-- "1" SeleniumDriver : automates
+FlaskApp "1" *-- "1" UserTokens : manages
+FlaskApp --> TrainBookingAgent : delegates AI
+FlaskApp ..> Train : caches
+FlaskApp ..> BookingRequest : processes
+
+' Relationships - Agent
+TrainBookingAgent --> AgentExecutor : executes
+TrainBookingAgent --> BaseLLM : uses
+AgentExecutor --> ToolRegistry : invokes
+BaseLLM <|-- ChatGroq
+ChatGroq --> GroqAPI : API calls
+
+' Relationships - Tools & External
+ToolRegistry --> FlaskApp : HTTP requests
+ToolRegistry ..> StationInfo : loads JSON
+SeleniumDriver --> IRCTCWebsite : scrapes
+
+' Relationships - Data
+Train "1" *-- "*" Availability
+BookingRequest "1" *-- "*" PassengerDetails
+
+' Notes
+note right of ChatInterface
+  React component with
+  Tailwind CSS styling
+  Voice & text input support
+end note
+
+note right of TrainBookingAgent
+  LangChain ReAct agent
+  Uses Groq (Meta Llama 3.3 70B)
+  Maintains chat history
+end note
+
+note bottom of SeleniumDriver
+  Selenium Wire captures
+  network requests for
+  API token extraction
+end note
+
+note right of ToolRegistry
+  20+ tools for train search,
+  booking, authentication,
+  and browser control
+end note
+
+@enduml

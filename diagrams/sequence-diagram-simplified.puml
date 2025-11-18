@@ -1,0 +1,102 @@
+@startuml Train Booking System - Sequence Diagram
+
+title Train Booking System - Main User Flow (Simplified)
+
+skinparam defaultFontSize 10
+skinparam sequenceMessageAlign center
+skinparam maxMessageSize 150
+
+actor User
+participant "Frontend\n(React)" as UI
+participant "Flask API" as API
+participant "AI Agent" as Agent
+participant "Selenium" as Browser
+participant "IRCTC" as IRCTC
+
+== Sign In ==
+User -> UI: "Book train"
+UI -> API: POST /chat
+API -> Agent: chat(message)
+Agent --> API: "Need phone number"
+API --> UI: Ask for phone
+UI --> User: "Provide phone"
+
+User -> UI: "9876543210"
+UI -> API: POST /chat
+API -> Agent: signin_user(phone)
+Agent -> API: POST /signin
+API -> Browser: Fill signin form
+Browser -> IRCTC: Submit phone
+IRCTC -> User: Send OTP SMS
+IRCTC --> Browser: OTP page
+Browser --> API: Ready
+API --> Agent: "OTP sent"
+Agent --> UI: Success
+UI --> User: "Enter OTP"
+
+User -> UI: "123456"
+UI -> API: POST /chat
+API -> Agent: submit_signin_otp
+Agent -> API: POST /ask-otp-signin
+API -> Browser: Submit OTP
+Browser -> IRCTC: Verify OTP
+IRCTC --> Browser: Signed in
+Browser --> API: Success
+API --> UI: "Signed in"
+UI --> User: "Ready to search"
+
+== Train Search ==
+User -> UI: "Delhi to Mumbai, 25 Nov"
+UI -> API: POST /chat
+API -> Agent: chat(message)
+Agent -> Agent: Parse: NDLS -> BCT
+Agent -> API: search_trains()
+API -> Browser: Navigate to search
+Browser -> IRCTC: Search trains
+IRCTC --> Browser: Train data
+Browser -> API: Capture API response
+API -> API: Cache train data
+API --> Agent: "Found 50 trains"
+Agent --> UI: Show trains
+UI --> User: Display results
+
+== Filter & Select ==
+User -> UI: "Cheapest in 3AC"
+UI -> API: POST /chat
+API -> Agent: get_cheapest_trains
+Agent -> API: GET /trains/cheapest
+API -> API: Filter cached data
+API --> Agent: Top 5 trains
+Agent --> UI: Filtered results
+UI --> User: Show cheapest
+
+== Booking ==
+User -> UI: "Book train 12345"
+UI -> API: POST /chat
+API -> Agent: chat(message)
+Agent --> UI: "Need passenger details"
+UI --> User: Ask details
+
+User -> UI: Provides passengers
+UI -> API: POST /chat
+API -> Agent: book_train_submit()
+Agent -> API: POST /booktrain
+API -> Browser: Fill booking form
+Browser -> IRCTC: Submit booking
+IRCTC --> Browser: Payment page
+Browser --> API: Form submitted
+API --> Agent: "Booking initiated"
+Agent --> UI: Success
+UI --> User: "Review payment"
+
+== Payment ==
+User -> UI: "Show payment"
+UI -> API: POST /chat
+API -> Agent: show_payment_page()
+Agent -> API: GET /show-payment-page
+API -> Browser: Maximize window
+Browser --> API: Visible
+API --> UI: "Payment shown"
+UI --> User: "Complete payment"
+
+@enduml
