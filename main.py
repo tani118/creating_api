@@ -106,7 +106,7 @@ def init_driver():
         
         # Move browser window off-screen (but keep it "visible" to the OS)
         # Temporarily disabled for debugging - uncomment when ready
-        #driver.set_window_position(-2000, 0)  # Move to left off-screen
+        driver.set_window_position(-2000, 0)  # Move to left off-screen
         
         # Execute CDP commands to mask automation
         driver.execute_cdp_cmd('Page.addScriptToEvaluateOnNewDocument', {
@@ -928,6 +928,12 @@ def enter_otp():
             print(f"Verify button not found or error clicking: {e}")
             pass
 
+        # Move browser to visible area and maximize
+        driver.set_window_position(0, 0)
+        driver.maximize_window()
+        # Bring window to front/focus using JavaScript
+        driver.execute_script("window.focus();")
+        
         return jsonify({"message": "OTP Entered, now show the payment page"}), 200
     except Exception as e:
         print(f"Error during booking OTP: {e}")
@@ -967,7 +973,7 @@ def hide_browser():
             return jsonify({"error": "No active browser session"}), 400
         
         # Move off-screen (don't minimize - it breaks JavaScript execution)
-        #driver.set_window_position(-2000, 0)
+        driver.set_window_position(-2000, 0)
         
         return jsonify({
             "message": "Browser hidden successfully",
