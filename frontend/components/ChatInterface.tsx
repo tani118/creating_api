@@ -30,7 +30,7 @@ export default function ChatInterface() {
     setMessages([
       {
         role: 'assistant',
-        content: 'Hello! I\'m your train booking assistant. I can help you search for trains, find the best options, and guide you through the booking process. Where would you like to travel?',
+        content: "Welcome to IRCTC Train Booking!",
         timestamp: new Date(),
       },
     ]);
