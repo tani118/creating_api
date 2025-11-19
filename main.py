@@ -633,9 +633,11 @@ def train_route(train_number):
         "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36"
     }
     
+    formatted_date = datetime.strptime(journey_date, '%Y-%m-%d').strftime('%Y%m%d')
+
     url = f"https://api.disha.corover.ai/dishaAPI/bot/trnscheduleEnq/{train_number}"
     params = {
-        "journeyDate": journey_date,
+        "journeyDate": formatted_date,
         "startingStationCode": starting_station
     }
     

@@ -296,28 +296,46 @@ def filter_trains(
         return f"Error filtering trains: {str(e)}"
 
 
+
 @tool
-def get_train_route(train_number: str, journey_date: str, starting_station: str) -> str:
+def get_train_route(query: str) -> str:
     """
     Get the complete route and schedule of a train.
     
+    Input should be a JSON string with format:
+    {"train_number": "12002", "journey_date": "24-11-2025", "starting_station": "NDLS"}
+    
     Args:
-        train_number: The train number
-        journey_date: Journey date in DD-MM-YYYY format
-        starting_station: Starting station code
+        query: JSON string containing train_number, journey_date (DD-MM-YYYY), and starting_station
     
     Returns:
-        JSON string with station-wise schedule
+        Formatted string with station-wise schedule
     """
     try:
-        params = {
-            "journeyDate": journey_date,
-            "startingStationCode": starting_station.upper()
+        # Parse the JSON input
+        params = json.loads(query)
+        train_number = params.get("train_number", "")
+        journey_date = params.get("journey_date", "")
+        starting_station = params.get("starting_station", "").upper()
+        
+        if not all([train_number, journey_date, starting_station]):
+            return "❌ Missing required fields: train_number, journey_date, or starting_station"
+        
+        # Convert date format from DD-MM-YYYY to YYYY-MM-DD for API
+        try:
+            date_obj = datetime.strptime(journey_date, "%d-%m-%Y")
+            formatted_date = date_obj.strftime("%Y-%m-%d")
+        except ValueError:
+            return "❌ Invalid date format. Use DD-MM-YYYY (e.g., 24-11-2025)"
+        
+        api_params = {
+            "journeyDate": formatted_date,
+            "startingStationCode": starting_station
         }
         
         response = requests.get(
             f"{BACKEND_URL}/trains/{train_number}/route",
-            params=params,
+            params=api_params,
             timeout=360
         )
         
@@ -325,18 +343,27 @@ def get_train_route(train_number: str, journey_date: str, starting_station: str)
             data = response.json()
             
             if 'stationList' in data:
-                result = f"Route for Train {train_number}:\n\n"
-                for station in data['stationList'][:10]:  # Show first 10 stations
-                    result += f"{station.get('stationCode')}: "
-                    result += f"Arr {station.get('arrivalTime', 'Start')}, "
-                    result += f"Dep {station.get('departureTime', 'End')}\n"
+                result = f"🚉 ROUTE FOR TRAIN {train_number}\n"
+                result += "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n"
+                
+                for i, station in enumerate(data['stationList'], 1):
+                    result += f"{i}. {station.get('stationCode')} - {station.get('stationName', 'N/A')}\n"
+                    result += f"   Arrival: {station.get('arrivalTime', 'Start')} | "
+                    result += f"Departure: {station.get('departureTime', 'End')}\n"
+                    if station.get('distance'):
+                        result += f"   Distance: {station.get('distance')} km\n"
+                    result += "\n"
+                
                 return result
             else:
                 return json.dumps(data, indent=2)
         else:
-            return f"Could not fetch route for train {train_number}"
+            return f"❌ Could not fetch route for train {train_number}. Status: {response.status_code}"
+    except json.JSONDecodeError as e:
+        return f"❌ Error parsing input: {str(e)}. Expected format: {{'train_number': '12002', 'journey_date': '24-11-2025', 'starting_station': 'NDLS'}}"
     except Exception as e:
-        return f"Error getting train route: {str(e)}"
+        return f"❌ Error getting train route: {str(e)}"
+
 
 
 @tool
@@ -805,7 +832,7 @@ def show_payment_page(dummy: str = "") -> str:
         
         if response.status_code == 200:
             data = response.json()
-            return f"✅ Payment page is now visible! Current URL: {data.get('current_url', 'N/A')}\n\nPlease complete the payment process on the browser window."
+            return f"✅ Payment page is now visible!\nPlease complete the payment process on the browser window."
         else:
             return f"❌ Error showing payment page: {response.status_code}"
     except Exception as e:
