@@ -296,7 +296,6 @@ def filter_trains(
         return f"Error filtering trains: {str(e)}"
 
 
-
 @tool
 def get_train_route(query: str) -> str:
     """
@@ -363,7 +362,6 @@ def get_train_route(query: str) -> str:
         return f"❌ Error parsing input: {str(e)}. Expected format: {{'train_number': '12002', 'journey_date': '24-11-2025', 'starting_station': 'NDLS'}}"
     except Exception as e:
         return f"❌ Error getting train route: {str(e)}"
-
 
 
 @tool
@@ -477,17 +475,11 @@ def book_train(booking_data: str) -> str:
         ]
     }
     
-    CRITICAL NEXT STEP AFTER SUCCESS:
-    - When this tool returns success, an OTP will be sent to the user's mobile number
-    - You MUST ask user for the OTP they received
-    - You MUST then call submit_booking_otp tool with the OTP to complete the booking
-    - DO NOT skip this step - booking is NOT complete until OTP is submitted
-    
     Args:
         booking_data: JSON string with complete booking information
     
     Returns:
-        Booking status message with instruction to get OTP from user
+        Booking status message
     """
     try:
         params = json.loads(booking_data)
@@ -541,13 +533,9 @@ def book_train(booking_data: str) -> str:
             result += f"Passengers ({len(passengers)}):\n"
             for i, p in enumerate(passengers, 1):
                 result += f"{i}. {p['name']} ({p['gender']}, {p['age']} years)\n"
-            result += "\n🔔 NEXT STEP REQUIRED:\n"
-            result += "An OTP has been sent to your registered mobile number.\n"
-            result += "⚠️ YOU MUST NOW:\n"
-            result += "1. Ask user to provide the OTP they received\n"
-            result += "2. Use submit_booking_otp tool with the OTP to complete booking\n"
-            result += "3. DO NOT proceed without submitting the OTP\n"
-            result += "\nBooking is NOT complete until OTP is submitted!"
+            result += "\n⚠️ IMPORTANT: The booking form has been filled on the IRCTC website."
+            result += "\nPlease review the details on the screen and complete the payment process manually."
+            result += "\nDo NOT close the browser window."
             return result
         else:
             error_text = response.text if response.text else "Unknown error"
@@ -726,22 +714,14 @@ def book_train_submit(booking_data: str) -> str:
 @tool
 def submit_booking_otp(otp: str) -> str:
     """
-    Submit OTP for booking confirmation - REQUIRED after book_train tool.
-    
-    CRITICAL: This tool MUST be called after book_train returns success.
-    The booking process is NOT complete without submitting the OTP.
-    
-    WORKFLOW:
-    1. book_train initiates booking and sends OTP to user's mobile
-    2. Ask user: "Please provide the OTP sent to your mobile number"
-    3. Call this tool with the OTP user provides
-    4. After success, call show_payment_page to display payment screen
+    Submit OTP for booking confirmation.
+    Use this after booking is initiated and user provides the OTP they received.
     
     Args:
         otp: The OTP code received by user (usually 6 digits)
     
     Returns:
-        Status message about OTP submission and next steps
+        Status message about OTP submission
     """
     try:
         response = requests.post(
@@ -751,13 +731,9 @@ def submit_booking_otp(otp: str) -> str:
         )
         
         if response.status_code == 200:
-            result = "✅ OTP verified successfully! Booking confirmed!\n\n"
-            result += "🔔 NEXT STEP:\n"
-            result += "Call show_payment_page tool to display the payment screen to the user.\n"
-            result += "User can then complete the payment to finalize their ticket."
-            return result
+            return "✅ OTP submitted successfully! Payment page should be visible now."
         else:
-            return f"❌ Error submitting OTP: {response.status_code}\nPlease verify the OTP and enter the correct OTP again."
+            return f"❌ Error submitting OTP: {response.status_code}"
     except Exception as e:
         return f"❌ Error calling OTP API: {str(e)}"
 
@@ -832,7 +808,7 @@ def show_payment_page(dummy: str = "") -> str:
         
         if response.status_code == 200:
             data = response.json()
-            return f"✅ Payment page is now visible!\nPlease complete the payment process on the browser window."
+            return f"✅ Payment page is now visible! Current URL: {data.get('current_url', 'N/A')}\n\nPlease complete the payment process on the browser window."
         else:
             return f"❌ Error showing payment page: {response.status_code}"
     except Exception as e:

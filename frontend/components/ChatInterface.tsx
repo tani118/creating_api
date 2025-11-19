@@ -157,73 +157,49 @@ export default function ChatInterface() {
         )}
       </div>
 
-      {/* Header */}
-      <div className={`relative backdrop-blur-xl border-b transition-colors duration-300 ${
-        isDarkMode 
-          ? 'bg-slate-800/90 border-slate-700/50' 
-          : 'bg-white/80 border-gray-200'
-      }`}>
-        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <div className={`absolute inset-0 bg-gradient-to-br from-emerald-400 to-blue-500 rounded-2xl blur-md ${
-                isDarkMode ? 'opacity-60' : 'opacity-40'
-              }`}></div>
-              <div className="relative bg-gradient-to-br from-emerald-500 to-blue-600 p-3 rounded-2xl shadow-lg">
-                <Bot className="w-7 h-7 text-white" />
-              </div>
-            </div>
-            <div>
-              <h1 className={`text-2xl font-bold tracking-tight transition-colors duration-300 ${
-                isDarkMode ? 'text-white' : 'text-gray-900'
-              }`}>
-                Railway Assistant
-              </h1>
-              <p className={`text-sm flex items-center gap-2 mt-1 transition-colors duration-300 ${
-                isDarkMode ? 'text-slate-400' : 'text-gray-600'
-              }`}>
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                AI-powered booking assistant
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setIsDarkMode(!isDarkMode)} 
-              title={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
-              className={`transition-all rounded-xl ${
-                isDarkMode 
-                  ? 'text-slate-400 hover:text-white hover:bg-slate-700/50' 
-                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={handleClear} 
-              title="Clear chat"
-              className={`transition-all rounded-xl ${
-                isDarkMode 
-                  ? 'text-slate-400 hover:text-white hover:bg-slate-700/50' 
-                  : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-              }`}
-            >
-              <Trash2 className="w-5 h-5" />
-            </Button>
-          </div>
+      {/* Compact Control Panel - Top Right */}
+      <div className="absolute top-4 right-4 z-50 flex items-center gap-2">
+        <div className={`flex items-center gap-1.5 backdrop-blur-xl rounded-full px-3 py-1.5 shadow-lg transition-all ${
+          isDarkMode 
+            ? 'bg-slate-800/90 border border-slate-700/50' 
+            : 'bg-white/90 border border-gray-200/50'
+        }`}>
+          <Bot className={`w-4 h-4 ${isDarkMode ? 'text-emerald-400' : 'text-emerald-600'}`} />
+          <span className={`text-xs font-semibold transition-colors ${
+            isDarkMode ? 'text-slate-300' : 'text-gray-700'
+          }`}>Railway AI</span>
         </div>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={() => setIsDarkMode(!isDarkMode)} 
+          title={isDarkMode ? "Light mode" : "Dark mode"}
+          className={`w-9 h-9 backdrop-blur-xl rounded-full shadow-lg transition-all ${
+            isDarkMode 
+              ? 'bg-slate-800/90 border border-slate-700/50 text-slate-400 hover:text-white hover:bg-slate-700/80' 
+              : 'bg-white/90 border border-gray-200/50 text-gray-600 hover:text-gray-900 hover:bg-gray-100/80'
+          }`}
+        >
+          {isDarkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={handleClear} 
+          title="Clear chat"
+          className={`w-9 h-9 backdrop-blur-xl rounded-full shadow-lg transition-all ${
+            isDarkMode 
+              ? 'bg-slate-800/90 border border-slate-700/50 text-slate-400 hover:text-red-400 hover:bg-slate-700/80' 
+              : 'bg-white/90 border border-gray-200/50 text-gray-600 hover:text-red-600 hover:bg-gray-100/80'
+          }`}
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
       </div>
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto relative">
-        <div className="max-w-5xl mx-auto px-6 py-8 space-y-6">
+        <div className="max-w-5xl mx-auto px-6 pt-20 pb-8 space-y-6">
           {messages.map((message, index) => (
             <div
               key={index}
@@ -255,14 +231,14 @@ export default function ChatInterface() {
                 }`}
               >
                 <div className="p-4">
-                  <p className={`text-[15px] whitespace-pre-wrap break-words leading-relaxed transition-colors duration-300 ${
+                  <p className={`text-base whitespace-pre-wrap break-words leading-relaxed transition-colors duration-300 ${
                     message.role === 'user' ? 'text-white' : isDarkMode ? 'text-slate-100' : 'text-gray-900'
                   }`}>
                     {message.content}
                   </p>
                   {mounted && (
                     <p
-                      className={`text-[11px] mt-3 font-medium transition-colors duration-300 ${
+                      className={`text-xs mt-3 font-medium transition-colors duration-300 ${
                         message.role === 'user'
                           ? 'text-blue-200/70'
                           : isDarkMode ? 'text-slate-400' : 'text-gray-500'
@@ -294,7 +270,7 @@ export default function ChatInterface() {
                     <span className={`w-2 h-2 rounded-full animate-bounce delay-100 ${isDarkMode ? 'bg-blue-400' : 'bg-blue-500'}`}></span>
                     <span className={`w-2 h-2 rounded-full animate-bounce delay-200 ${isDarkMode ? 'bg-emerald-400' : 'bg-emerald-500'}`}></span>
                   </div>
-                  <span className={`text-sm font-medium transition-colors duration-300 ${
+                  <span className={`text-[15px] font-medium transition-colors duration-300 ${
                     isDarkMode ? 'text-slate-300' : 'text-gray-700'
                   }`}>Processing your request...</span>
                 </div>
@@ -320,7 +296,7 @@ export default function ChatInterface() {
                 onKeyDown={handleKeyPress}
                 placeholder="Type your message... (e.g., 'Find trains from Delhi to Mumbai tomorrow')"
                 disabled={isLoading || isRecording}
-                className={`transition-all py-6 text-base rounded-xl ${
+                className={`transition-all py-6 text-[15px] rounded-xl ${
                   isDarkMode
                     ? 'bg-slate-900/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30'
                     : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 shadow-sm'
