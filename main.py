@@ -881,7 +881,7 @@ def book_train_submit():
 
     print("Clicking Review Journey...")
     driver.find_element(By.XPATH, "//*[@id='pass-step']/button").click()
-    time.sleep(5)
+    time.sleep(10)
 
     driver.find_element(By.XPATH, "//*[@id='drawer-footer']/div/button").click()
     time.sleep(3)
@@ -925,11 +925,19 @@ def enter_otp():
             verify_button = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/div[2]/button[1]")
             verify_button.click()
             time.sleep(10)
-            print("Booking process completed!")
+            print("OTP entered!, Now i have to check if the OTP enetered was correct or not!")
         except Exception as e:
             print(f"Verify button not found or error clicking: {e}")
             pass
 
+        try:
+            time.sleep(3)
+            invalid_otp_msg = driver.find_element(By.XPATH, "//*[@id='disha-drawer-2']/div/div[1]/div[2]/div/div/p")
+            if invalid_otp_msg:
+                print("invalid OTP message")
+                return jsonify({"error": "Invalid OTP provided please ask the user to enter the correct OTP and call the submit_booking_otp again"}), 400
+        except:
+            pass
         # Move browser to visible area and maximize
         driver.set_window_position(0, 0)
         driver.maximize_window()
@@ -1074,11 +1082,19 @@ def enter_otp_signin():
             verify_button = driver.find_element(By.XPATH, "//*[@id='drawer-footer']/span/button")
             verify_button.click()
             time.sleep(10)
-            print("Sign-in process completed!")
+            print("OTP entered, now cchecking if OTP was correct")
         except Exception as e:
             print(f"Verify button not found or error clicking: {e}")
             # This might be okay if sign-in completes automatically
         
+        try:
+            time.sleep(3)
+            invalid_otp_msg = driver.find_element(By.XPATH, "//*[@id='disha-drawer-1']/div/div[1]/div[2]/div/div/p")
+            if invalid_otp_msg:
+                return jsonify({"error": "Invalid OTP provided please ask to enter the correct OTP and reinitiate the otp entering process if phone number is wrong then reset browser and start the whole process again"}), 400
+        except:
+            pass
+
         return jsonify({"message": "User logged in successfully"}), 200
     
     except Exception as e:

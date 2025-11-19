@@ -757,7 +757,7 @@ def submit_booking_otp(otp: str) -> str:
             result += "User can then complete the payment to finalize their ticket."
             return result
         else:
-            return f"❌ Error submitting OTP: {response.status_code}\nPlease verify the OTP and try again."
+            return f"❌ Error submitting OTP: {response.status_code}\nPlease verify the OTP and enter the correct OTP again."
     except Exception as e:
         return f"❌ Error calling OTP API: {str(e)}"
 
